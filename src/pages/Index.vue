@@ -53,7 +53,7 @@
          <q-btn-toggle
         v-model="radio_advertisement"
         spread
-        glossy
+        no-caps
         toggle-color="purple"
         color="white"
         text-color="black"
@@ -70,7 +70,7 @@
         <q-btn-toggle
         v-model="radio_tourism"
         spread
-        glossy
+        no-caps
         toggle-color="pink"
         color="white"
         text-color="black"
