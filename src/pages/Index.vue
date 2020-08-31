@@ -50,19 +50,35 @@
     <div class="row q-mt-sm">
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
-         <div class="row">
-          <div class="col"><q-radio v-model="radio_advertisement" val="Advertisement" label="Advertisement" /></div>
-          <div class="col"><q-radio v-model="radio_advertisement" val="Not Advertisement" label="Not Advertisement" /></div>
-        </div>
+         <q-btn-toggle
+        v-model="radio_advertisement"
+        spread
+        glossy
+        toggle-color="purple"
+        color="white"
+        text-color="black"
+        :options="[
+          {label: 'Advertisement', value: 'T'},
+          {label: 'Not Advertisement', value: 'F'}
+        ]"
+      />
       </div>
     </div>
     <div class="row q-mt-sm">
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
-        <div class="row">
-          <div class="col"><q-radio v-model="radio_tourism" val="Tourism" label="Tourism" /></div>
-          <div class="col"><q-radio v-model="radio_tourism" val="Not Tourism" label="Not Tourism" /></div>
-        </div>
+        <q-btn-toggle
+        v-model="radio_tourism"
+        spread
+        glossy
+        toggle-color="pink"
+        color="white"
+        text-color="black"
+        :options="[
+          {label: 'Tourism', value: 'T'},
+          {label: 'Not Tourism', value: 'F'}
+        ]"
+      />
       </div>
     </div>
     <div class="col-2"></div>
