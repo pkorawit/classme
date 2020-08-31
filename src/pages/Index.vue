@@ -6,7 +6,7 @@
       </div>
       <div class="col-6"></div>
       <div class="col-3">
-        <q-input v-model="search" standout type="search">
+        <q-input v-model="search" standout type="search" label="Search by ID">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -14,7 +14,9 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-2 text-center">Previous</div>
+      <div class="col-2 text-center">
+        <q-btn push color="primary" label="Previous" />
+      </div>
       <div class="col-8 text-center">
         <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" native-context-menu>
           <q-icon
@@ -28,24 +30,31 @@
           </q-icon>
         </q-img>
       </div>
-      <div class="col-2 text-center">Next</div>
+      <div class="col-2 text-center"> 
+        <q-btn push color="primary" label="Next" />
+      </div>
     </div>
     <div class="row q-mt-sm">
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
-        <div class="row">
-          <div class="col"><q-input filled v-model="text" label="Shortcode" stack-label /></div>
-          <div class="col"><q-input filled v-model="text" label="Location ID" stack-label /></div>
-        </div>
-
          <div class="row">
-          <div class="col"><q-input filled v-model="text" label="Username" stack-label /></div>
-          <div class="col"><q-input filled v-model="text" label="Location Name" stack-label /></div>
+          <div class="col"><q-input filled v-model="text" readonly label="Location Name" stack-label /></div>
         </div>
         <div class="row">
-          <div class="col"><q-input filled v-model="text" type="textarea" label="Caption Text" stack-label /></div>
-        </div>
-                
+          <div class="col"><q-input filled v-model="text" readonly type="textarea" label="Caption Text" stack-label /></div>
+        </div>    
+      </div>
+      <div class="col-2"></div>
+    </div>
+    <div class="row"></div>
+    <div class="row q-mt-sm">
+      <div class="col-2"></div>
+      <div class="col-8 bg-info  items-start">
+         <div class="row">
+          <div class="col"><q-radio v-model="text" val="Advertisement" label="Advertisement" /></div>
+          <div class="col"><q-radio v-model="text" val="Travel" label="Travel" /></div>
+          <div class="col"><q-radio v-model="text" val="Not tourism" label="Not tourism" /></div>
+        </div>  
       </div>
       <div class="col-2"></div>
     </div>
