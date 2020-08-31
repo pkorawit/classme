@@ -13,9 +13,9 @@
         </q-input>
       </div>
     </div>
-    <div class="row">
+    <div class="row justify-center items-center">
       <div class="col-2 text-center">
-        <q-btn push color="primary" label="Previous" />
+        <q-btn push color="negative" label="<< Previous" />
       </div>
       <div class="col-8 text-center">
         <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" native-context-menu>
@@ -31,7 +31,7 @@
         </q-img>
       </div>
       <div class="col-2 text-center"> 
-        <q-btn push color="primary" label="Next" />
+        <q-btn push color="negative" label="Next >>" />
       </div>
     </div>
     <div class="row q-mt-sm">
