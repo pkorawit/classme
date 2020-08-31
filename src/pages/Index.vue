@@ -2,7 +2,7 @@
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
       <div class="col-3">
-        <q-input standout v-model="text" readonly />
+        <q-input standout v-model="text_ID" readonly />
       </div>
       <div class="col-6"></div>
       <div class="col-3">
@@ -18,7 +18,7 @@
         <q-btn push color="negative" label="<< Previous" />
       </div>
       <div class="col-8 text-center">
-        <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" native-context-menu>
+        <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" style="height: 480px; max-width: 480px" native-context-menu>
           <q-icon
             class="absolute all-pointer-events"
             size="32px"
@@ -38,10 +38,10 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
          <div class="row">
-          <div class="col"><q-input filled v-model="text" readonly label="Location Name" stack-label /></div>
+          <div class="col"><q-input filled v-model="text_ID" readonly label="Location Name" stack-label /></div>
         </div>
         <div class="row">
-          <div class="col"><q-input filled v-model="text" readonly type="textarea" label="Caption Text" stack-label /></div>
+          <div class="col"><q-input filled v-model="text_ID" readonly type="textarea" label="Caption Text" stack-label /></div>
         </div>    
       </div>
       <div class="col-2"></div>
@@ -51,13 +51,21 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
          <div class="row">
-          <div class="col"><q-radio v-model="text" val="Advertisement" label="Advertisement" /></div>
-          <div class="col"><q-radio v-model="text" val="Travel" label="Travel" /></div>
-          <div class="col"><q-radio v-model="text" val="Not tourism" label="Not tourism" /></div>
-        </div>  
+          <div class="col"><q-radio v-model="radio_advertisement" val="Advertisement" label="Advertisement" /></div>
+          <div class="col"><q-radio v-model="radio_advertisement" val="Not Advertisement" label="Not Advertisement" /></div>
+        </div>
       </div>
-      <div class="col-2"></div>
     </div>
+    <div class="row q-mt-sm">
+      <div class="col-2"></div>
+      <div class="col-8 bg-info  items-start">
+        <div class="row">
+          <div class="col"><q-radio v-model="radio_tourism" val="Tourism" label="Tourism" /></div>
+          <div class="col"><q-radio v-model="radio_tourism" val="Not Tourism" label="Not Tourism" /></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-2"></div>
     <div class="row"></div>
   </q-page>
 </template>
@@ -67,8 +75,11 @@ export default {
   name: "PageIndex",
   data() {
     return {
-      text: "00001",
+      text_ID: "00001",
       search: "",
+      radio_advertisement: "",
+      radio_tourism: "",
+
     };
   },
 };
