@@ -1,23 +1,21 @@
 <template>
   <q-page class="bg-secondary">
     <q-form @submit="onSubmit" class="q-gutter-md">
-      <q-dialog
-      v-model="submitEmpty"
-    >
-      <q-card style="width: 300px">
-        <q-card-section>
-          <div class="text-h6">Notification</div>
-        </q-card-section>
+      <q-dialog v-model="submitEmpty">
+        <q-card style="width: 300px">
+          <q-card-section>
+            <div class="text-h6">Notification</div>
+          </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          Please choose the answer.
-        </q-card-section>
+          <q-card-section class="q-pt-none">
+            Please choose the answer.
+          </q-card-section>
 
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+          <q-card-actions align="right" class="bg-white text-teal">
+            <q-btn flat label="OK" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <div class="row q-pa-sm">
         <div class="col-3">
           <q-input standout v-model="text_ID" readonly />
@@ -38,7 +36,13 @@
       </div>
       <div class="row justify-center items-center">
         <div class="col-2 text-center">
-          <q-btn push color="negative" label="<< Previous" type="submit" @click="submitEmpty = true"/>
+          <q-btn
+            push
+            color="negative"
+            label="<< Previous"
+            type="submit"
+            @click="submitEmpty = true"
+          />
         </div>
         <div class="col-8 text-center">
           <q-img
@@ -58,7 +62,12 @@
           </q-img>
         </div>
         <div class="col-2 text-center">
-          <q-btn color="negative" label="Next >>" type="submit" @click="submitEmpty = true"/>
+          <q-btn
+            color="negative"
+            label="Next >>"
+            type="submit"
+            @click="submitEmpty = true"
+          />
         </div>
       </div>
       <div class="row q-mt-sm">
@@ -137,21 +146,29 @@ export default {
   name: "PageIndex",
   data() {
     return {
-      text_ID: "1",
-      search_ID: "",
-      image: "",
-      location_name:
-        "Patong Boxing Stadium & World BungyJump :: Phuket, Thailand",
-      caption_text:
-        "Vous avez été nombreux à demander le combat en entier donc voilà pour vous c’est cadeau 💝🥊🇹🇭\n#thailand #boxethai",
+      shortCode: null,
+      text_ID: null,
+      search_ID: null,
+      location_name: null,
+      caption_text: null,
       toggle_advertisement: null,
       toggle_tourism: null,
       submitResult: [],
-      submitEmpty: false,
+      submitEmpty: false
     };
   },
   methods: {
     onSubmit(evt) {
+      this.$axios
+        .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/1")
+        .then(response => {
+          // console.log(response.data);
+          this.shortCode = response.data.shortCode;
+          this.text_ID = response.data.id;
+          this.location_name = response.data.locationName;
+          this.caption_text = response.data.captionText;
+        });
+
       const formData = new FormData(evt.target);
       const submitResult = [];
 
@@ -163,10 +180,22 @@ export default {
       }
       this.submitResult = submitResult;
       this.submitEmpty = submitResult.length === 0;
-      console.log("SubmitEmpty : " + this.submitEmpty);
+      // console.log("SubmitEmpty : " + this.submitEmpty);
       if (this.submitEmpty == false) {
         console.log("Add data in database");
-        console.log(this.submitResult);
+        // console.log(this.submitResult);
+        if (this.toggle_advertisement == null) {
+          this.toggle_advertisement = "F";
+        }
+        if (this.toggle_tourism == null) {
+          this.toggle_tourism = "F";
+        }
+        if (this.toggle_tourism == "T") {
+          this.toggle_advertisement = "F";
+        }
+        console.log("shortCode : " + this.shortCode);
+        console.log("advertisement : " + this.toggle_advertisement);
+        console.log("tourism : " + this.toggle_tourism);
       } else {
         console.log("Do nothing");
       }
