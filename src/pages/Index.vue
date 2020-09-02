@@ -2,15 +2,16 @@
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
       <div class="col-3">
-        <q-input standout v-model="text_ID" readonly />
+        <q-input standout v-model="id" readonly />
       </div>
       <div class="col-6"></div>
       <div class="col-3">
         <q-input
-          v-model="search_ID"
-          standout
-          type="search"
+          v-model="search"
+          filled
           label="Search by ID"
+          mask="#######"
+          @keydown.enter.prevent="onSearch"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -123,14 +124,15 @@ export default {
   data() {
     return {
       id: 1,
+      search: null,
       shortCode: null,
       imageSrc: null,
-      text_ID: null,
-      search_ID: null,
       location_name: null,
       caption_text: null,
       toggle_advertisement: null,
-      toggle_tourism: null
+      toggle_tourism: null,
+      postBody: {},
+      productCount: null
     };
   },
   mounted() {
@@ -138,14 +140,20 @@ export default {
   },
   methods: {
     async init() {
-      this.toggle_advertisement = null,
-      this.toggle_tourism = null
+      (this.toggle_advertisement = null), (this.toggle_tourism = null);
       await this.getData();
       console.log(this.id + ": ShortCode : " + this.shortCode);
       this.imageSrc =
         "https://storage.cloud.google.com/instagram_phuket/post_image/" +
         this.shortCode +
         ".jpg";
+      this.postBody = {
+        shortCode: this.shortCode,
+        isAds: this.toggle_advertisement,
+        isTourist: this.toggle_tourism,
+        timestamp: 0
+      };
+      console.log(this.postBody);
     },
     async getData() {
       await this.$axios
@@ -153,7 +161,7 @@ export default {
         .then(response => {
           // console.log(response.data);
           this.shortCode = response.data.shortCode;
-          this.text_ID = response.data.id;
+          this.id = response.data.id;
           this.location_name = response.data.locationName;
           this.caption_text = response.data.captionText;
         })
@@ -173,32 +181,50 @@ export default {
           console.log(e);
         });
     },
+    // async postData() {
+    //   await this.$axios
+    //     .post("https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications", {
+    //   body: this.postBody
+    // })
+    // .then(response => {})
+    // .catch(e => {
+    //   this.errors.push(e)
+    // })
+    // },
+    onSearch() {
+      if (this.search == 0) {
+        this.search = 1;
+      }
+      this.id = this.search;
+      this.init();
+    },
     onPrevious() {
       console.log("onPrevious");
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
       } else {
-        this.onData();
+        this.onCheck();
         this.id = this.id - 1;
         if (this.id <= 0) {
           this.id = 1;
         }
         this.init();
       }
+      // this.postData();
     },
     onNext() {
       console.log("onNext");
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
       } else {
-        this.onData();
+        this.onCheck();
         this.id = this.id + 1;
         this.init();
       }
+      // this.postData();
     },
 
-    onData() {
-      this.dialog == true;
+    onCheck() {
       if (this.toggle_advertisement == null) {
         this.toggle_advertisement = "false";
       }
@@ -208,9 +234,6 @@ export default {
       if (this.toggle_tourism == "true") {
         this.toggle_advertisement = "false";
       }
-      console.log("shortCode : " + this.shortCode);
-      console.log("advertisement : " + this.toggle_advertisement);
-      console.log("tourism : " + this.toggle_tourism);
     }
   }
 };
