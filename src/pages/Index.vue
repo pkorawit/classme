@@ -132,7 +132,6 @@ export default {
       toggle_advertisement: null,
       toggle_tourism: null,
       postBody: {},
-      productCount: null
     };
   },
   mounted() {
@@ -140,7 +139,9 @@ export default {
   },
   methods: {
     async init() {
-      (this.toggle_advertisement = null), (this.toggle_tourism = null);
+      this.toggle_advertisement = null;
+      this.toggle_tourism = null;
+      this.search = null;
       await this.getData();
       console.log(this.id + ": ShortCode : " + this.shortCode);
       this.imageSrc =
@@ -192,7 +193,7 @@ export default {
     // })
     // },
     onSearch() {
-      if (this.search == 0) {
+      if (this.search == 0 || this.search > 201597) {
         this.search = 1;
       }
       this.id = this.search;
@@ -227,11 +228,11 @@ export default {
     onCheck() {
       if (this.toggle_advertisement == null) {
         this.toggle_advertisement = "false";
-      }
-      if (this.toggle_tourism == null) {
+      } else if (this.toggle_tourism == null) {
         this.toggle_tourism = "false";
-      }
-      if (this.toggle_tourism == "true") {
+      } else if (this.toggle_advertisement == "true") {
+        this.toggle_tourism = "false";
+      } else if (this.toggle_tourism == "true") {
         this.toggle_advertisement = "false";
       }
     }
