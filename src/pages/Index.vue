@@ -30,7 +30,7 @@
       </div>
       <div class="col-8 text-center">
         <q-img
-          src="https://cdn.quasar.dev/img/parallax2.jpg"
+          :src="imageSrc"
           style="height: 480px; max-width: 480px"
           native-context-menu
         >
@@ -126,20 +126,33 @@ export default {
     return {
       id: 1,
       shortCode: null,
+      imageSrc: null,
       text_ID: null,
       search_ID: null,
       location_name: null,
       caption_text: null,
       toggle_advertisement: null,
-      toggle_tourism: null,
+      toggle_tourism: null
     };
   },
   mounted() {
     this.init();
   },
   methods: {
-    init() {
-      this.$axios
+    async init() {
+      this.toggle_advertisement = null;
+      this.toggle_tourism = null;
+      await this.getData();
+      console.log(this.id + ": ShortCode : " + this.shortCode);
+      console.log(this.toggle_advertisement);
+      console.log(this.toggle_tourism);
+      this.imageSrc =
+        "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+        this.shortCode +
+        ".jpg";
+    },
+    async getData() {
+      await this.$axios
         .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id)
         .then(response => {
           // console.log(response.data);
@@ -147,19 +160,35 @@ export default {
           this.text_ID = response.data.id;
           this.location_name = response.data.locationName;
           this.caption_text = response.data.captionText;
+        })
+        .catch(e => {
+          console.log(e);
+        });
+      await this.$axios
+        .get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/" +
+            this.shortCode
+        )
+        .then(response => {
+          this.shortCode = response.data.shortCode;
+          this.toggle_advertisement = response.data.isAds;
+          this.toggle_tourism = response.data.isTourist;
+        })
+        .catch(e => {
+          console.log(e);
         });
     },
     onPrevious() {
       console.log("onPrevious");
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
-      }else{
-      this.onData();
-      this.id = this.id - 1;
-      if (this.id <= 0) {
-        this.id = 1;
-      }
-      this.init();
+      } else {
+        this.onData();
+        this.id = this.id - 1;
+        if (this.id <= 0) {
+          this.id = 1;
+        }
+        this.init();
       }
     },
     onNext() {
@@ -167,27 +196,27 @@ export default {
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
       } else {
-      this.onData();
-      this.id = this.id + 1;
-      this.init();
+        this.onData();
+        this.id = this.id + 1;
+        this.init();
       }
     },
 
     onData() {
-        this.dialog == true;
-        if (this.toggle_advertisement == null) {
-          this.toggle_advertisement = "false";
-        }
-        if (this.toggle_tourism == null) {
-          this.toggle_tourism = "false";
-        }
-        if (this.toggle_tourism == "true") {
-          this.toggle_advertisement = "false";
-        }
-        console.log("shortCode : " + this.shortCode);
-        console.log("advertisement : " + this.toggle_advertisement);
-        console.log("tourism : " + this.toggle_tourism);
+      this.dialog == true;
+      if (this.toggle_advertisement == null) {
+        this.toggle_advertisement = "false";
       }
+      if (this.toggle_tourism == null) {
+        this.toggle_tourism = "false";
+      }
+      if (this.toggle_tourism == "true") {
+        this.toggle_advertisement = "false";
+      }
+      console.log("shortCode : " + this.shortCode);
+      console.log("advertisement : " + this.toggle_advertisement);
+      console.log("tourism : " + this.toggle_tourism);
+    }
   }
 };
 </script>
