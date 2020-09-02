@@ -83,7 +83,6 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
         <q-btn-toggle
-          name="toggle_advertisement"
           v-model="toggle_advertisement"
           spread
           no-caps
@@ -91,8 +90,8 @@
           color="white"
           text-color="black"
           :options="[
-            { label: 'Advertisement', value: 'true' },
-            { label: 'Not Advertisement', value: 'false' }
+            { label: 'Advertisement', value: true },
+            { label: 'Not Advertisement', value: false }
           ]"
         />
       </div>
@@ -101,7 +100,6 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
         <q-btn-toggle
-          name="toggle_tourism"
           v-model="toggle_tourism"
           spread
           no-caps
@@ -109,8 +107,8 @@
           color="white"
           text-color="black"
           :options="[
-            { label: 'Tourism', value: 'true' },
-            { label: 'Not Tourism', value: 'false' }
+            { label: 'Tourism', value: true },
+            { label: 'Not Tourism', value: false }
           ]"
         />
       </div>
@@ -140,12 +138,10 @@ export default {
   },
   methods: {
     async init() {
-      this.toggle_advertisement = null;
-      this.toggle_tourism = null;
+      this.toggle_advertisement = null,
+      this.toggle_tourism = null
       await this.getData();
       console.log(this.id + ": ShortCode : " + this.shortCode);
-      console.log(this.toggle_advertisement);
-      console.log(this.toggle_tourism);
       this.imageSrc =
         "https://storage.cloud.google.com/instagram_phuket/post_image/" +
         this.shortCode +
@@ -170,7 +166,6 @@ export default {
             this.shortCode
         )
         .then(response => {
-          this.shortCode = response.data.shortCode;
           this.toggle_advertisement = response.data.isAds;
           this.toggle_tourism = response.data.isTourist;
         })
