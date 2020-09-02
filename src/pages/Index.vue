@@ -1,8 +1,11 @@
 <template>
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
-      <div class="col-3">
-        <q-input standout v-model="id" readonly />
+      <div class="col-1">
+        <q-input standout v-model="id" label="ID" readonly/>
+      </div>
+      <div class="col-2">
+        <q-input standout v-model="shortCode" label="Short Code" readonly/>
       </div>
       <div class="col-6"></div>
       <div class="col-3">
@@ -47,7 +50,12 @@
         </q-img>
       </div>
       <div class="col-2 text-center">
-        <q-btn color="negative" label="Next >>" type="submit" @click="onNext" />
+        <q-btn
+        push 
+        color="negative" 
+        label="Next >>" 
+        type="submit" 
+        @click="onNext"/>
       </div>
     </div>
     <div class="row q-mt-sm">
@@ -123,6 +131,7 @@ export default {
   name: "PageIndex",
   data() {
     return {
+      count: 200000,
       id: 1,
       search: null,
       shortCode: null,
@@ -193,10 +202,9 @@ export default {
     // })
     // },
     onSearch() {
-      if (this.search == 0 || this.search > 201597) {
-        this.search = 1;
+      if (!(this.search == 0 || this.search > this.count)) {
+        this.id = this.search;
       }
-      this.id = this.search;
       this.init();
     },
     onPrevious() {
@@ -220,6 +228,9 @@ export default {
       } else {
         this.onCheck();
         this.id = this.id + 1;
+        if (this.id > this.count) {
+          this.id = this.count;
+        }
         this.init();
       }
       // this.postData();
