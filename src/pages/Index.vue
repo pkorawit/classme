@@ -66,6 +66,26 @@
           <div class="col">
             <q-input
               filled
+              v-model="username"
+              readonly
+              label="Username"
+              stack-label
+            />
+          </div>
+          <div class="col">
+            <q-input
+              filled
+              v-model="fullname"
+              readonly
+              label="Full Name"
+              stack-label
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <q-input
+              filled
               v-model="location_name"
               readonly
               label="Location Name"
@@ -132,12 +152,14 @@ export default {
   name: "PageIndex",
   data() {
     return {
-      id: 1,
       count: null,
       status: true,
       search: null,
-      shortCode: null,
       imageSrc: null,
+      id: 1,
+      shortCode: null,
+      fullname: null,
+      username: null,
       location_name: null,
       caption_text: null,
       toggle_advertisement: null,
@@ -179,6 +201,8 @@ export default {
         .then(response => {
           // console.log(response.data);
           this.shortCode = response.data.shortCode;
+          this.fullname = response.data.fullname;
+          this.username = response.data.username;
           this.id = response.data.id;
           this.location_name = response.data.locationName;
           this.caption_text = response.data.captionText;
