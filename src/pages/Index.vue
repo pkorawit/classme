@@ -2,10 +2,10 @@
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
       <div class="col-1">
-        <q-input standout v-model="id" label="ID" readonly/>
+        <q-input standout v-model="id" label="ID" readonly />
       </div>
       <div class="col-2">
-        <q-input standout v-model="shortCode" label="Short Code" readonly/>
+        <q-input standout v-model="shortCode" label="Short Code" readonly />
       </div>
       <div class="col-6"></div>
       <div class="col-3">
@@ -51,11 +51,12 @@
       </div>
       <div class="col-2 text-center">
         <q-btn
-        push 
-        color="negative" 
-        label="Next >>" 
-        type="submit" 
-        @click="onNext"/>
+          push
+          color="negative"
+          label="Next >>"
+          type="submit"
+          @click="onNext"
+        />
       </div>
     </div>
     <div class="row q-mt-sm">
@@ -131,8 +132,9 @@ export default {
   name: "PageIndex",
   data() {
     return {
-      count: 200000,
       id: 1,
+      count: null,
+      status: true,
       search: null,
       shortCode: null,
       imageSrc: null,
@@ -140,11 +142,12 @@ export default {
       caption_text: null,
       toggle_advertisement: null,
       toggle_tourism: null,
-      postBody: {},
+      timestamp: 0,
     };
   },
-  mounted() {
-    this.init();
+  async mounted() {
+    await this.getCount();
+    await this.init();
   },
   methods: {
     async init() {
@@ -157,13 +160,18 @@ export default {
         "https://storage.cloud.google.com/instagram_phuket/post_image/" +
         this.shortCode +
         ".jpg";
-      this.postBody = {
-        shortCode: this.shortCode,
-        isAds: this.toggle_advertisement,
-        isTourist: this.toggle_tourism,
-        timestamp: 0
-      };
-      console.log(this.postBody);
+      console.log("Status : " + this.status);
+    },
+    getCount() {
+       this.$axios
+        .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count")
+        .then(response => {
+          this.count = response.data;
+          console.log(this.count);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
     async getData() {
       await this.$axios
@@ -188,19 +196,44 @@ export default {
           this.toggle_tourism = response.data.isTourist;
         })
         .catch(e => {
+          // console.log(JSON.stringify(e));
+          // console.log(JSON.stringify(e.response.data.status));
+          this.status = false;
+        });
+    },
+    async postData() {
+      await this.$axios
+        .post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications",
+          {
+            shortCode: this.shortCode,
+            isAds: this.toggle_advertisement,
+            isTourist: this.toggle_tourism,
+            timestamp: this.timestamp
+          }
+        )
+        .then(response => {})
+        .catch(e => {
           console.log(e);
         });
     },
-    // async postData() {
-    //   await this.$axios
-    //     .post("https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications", {
-    //   body: this.postBody
-    // })
-    // .then(response => {})
-    // .catch(e => {
-    //   this.errors.push(e)
-    // })
-    // },
+    async putData() {
+      await this.$axios
+        .put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/" +
+            this.shortCode,
+          {
+            shortCode: this.shortCode,
+            isAds: this.toggle_advertisement,
+            isTourist: this.toggle_tourism,
+            timestamp: this.timestamp
+          }
+        )
+        .then(response => {})
+        .catch(e => {
+          console.log(e);
+        });
+    },
     onSearch() {
       if (!(this.search == 0 || this.search > this.count)) {
         this.id = this.search;
@@ -212,39 +245,47 @@ export default {
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
       } else {
-        this.onCheck();
         this.id = this.id - 1;
         if (this.id <= 0) {
           this.id = 1;
         }
-        this.init();
+        this.onCheck();
+        if (this.status == true) {
+          this.putData();
+        } else {
+          this.postData();
+        }
       }
-      // this.postData();
+      this.init();
     },
     onNext() {
       console.log("onNext");
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
       } else {
-        this.onCheck();
         this.id = this.id + 1;
         if (this.id > this.count) {
           this.id = this.count;
         }
-        this.init();
+        this.onCheck();
+        if (this.status == true) {
+          this.putData();
+        } else {
+          this.postData();
+        }
       }
-      // this.postData();
+      this.init();
     },
 
     onCheck() {
       if (this.toggle_advertisement == null) {
-        this.toggle_advertisement = "false";
+        this.toggle_advertisement = false;
       } else if (this.toggle_tourism == null) {
-        this.toggle_tourism = "false";
-      } else if (this.toggle_advertisement == "true") {
-        this.toggle_tourism = "false";
-      } else if (this.toggle_tourism == "true") {
-        this.toggle_advertisement = "false";
+        this.toggle_tourism = false;
+      } else if (this.toggle_advertisement == true) {
+        this.toggle_tourism = false;
+      } else if (this.toggle_tourism == true) {
+        this.toggle_advertisement = false;
       }
     }
   }
