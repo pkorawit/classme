@@ -63,6 +63,9 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
         <div class="row">
+          <div class="col-0.5">
+            <a target="_blank" :href="url_ig"><img src="~assets/logo_ig.png" style="height: 50px; max-width: 50px"></a>
+          </div>
           <div class="col">
             <q-input
               filled
@@ -72,12 +75,13 @@
               stack-label
             />
           </div>
+          
           <div class="col">
             <q-input
               filled
               v-model="fullname"
               readonly
-              label="Full Name"
+              label="Fullname"
               stack-label
             />
           </div>
@@ -157,9 +161,10 @@ export default {
       search: null,
       imageSrc: null,
       id: 1,
+      url_ig: null,
       shortCode: null,
-      fullname: null,
       username: null,
+      fullname: null,
       location_name: null,
       caption_text: null,
       toggle_advertisement: null,
@@ -200,9 +205,10 @@ export default {
         .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id)
         .then(response => {
           // console.log(response.data);
+          this.url_ig = "https://www.instagram.com/" + response.data.username;
           this.shortCode = response.data.shortCode;
-          this.fullname = response.data.fullname;
           this.username = response.data.username;
+          this.fullname = response.data.fullname;
           this.id = response.data.id;
           this.location_name = response.data.locationName;
           this.caption_text = response.data.captionText;
