@@ -127,6 +127,7 @@
             { label: 'Advertisement', value: true },
             { label: 'Not Advertisement', value: false }
           ]"
+          @click="onCheck"
         />
       </div>
     </div>
@@ -144,6 +145,7 @@
             { label: 'Tourism', value: true },
             { label: 'Not Tourism', value: false }
           ]"
+          @click="onCheck"
         />
       </div>
     </div>
@@ -279,7 +281,6 @@ export default {
         if (this.id <= 0) {
           this.id = 1;
         }
-        this.onCheck();
         if (this.status == true) {
           this.putData();
         } else {
@@ -297,7 +298,6 @@ export default {
         if (this.id > this.count) {
           this.id = this.count;
         }
-        this.onCheck();
         if (this.status == true) {
           this.putData();
         } else {
@@ -308,13 +308,13 @@ export default {
     },
 
     onCheck() {
-      if (this.toggle_advertisement == null) {
-        this.toggle_advertisement = false;
-      } else if (this.toggle_tourism == null) {
-        this.toggle_tourism = false;
-      } else if (this.toggle_advertisement == true) {
+      if (this.toggle_advertisement == true) {
         this.toggle_tourism = false;
       } else if (this.toggle_tourism == true) {
+        this.toggle_advertisement = false;
+      } else if (this.toggle_advertisement == false){
+        this.toggle_tourism = false;
+      } else if (this.toggle_tourism == false){
         this.toggle_advertisement = false;
       }
     }
