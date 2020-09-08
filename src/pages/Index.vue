@@ -35,7 +35,7 @@
       <div class="col-8 text-center">
         <q-img
           :src="imageSrc"
-          style="height: 480px; max-width: 480px"
+          style="height: 480px; max-width: 600px"
           native-context-menu
         >
           <q-icon
@@ -63,7 +63,7 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
         <div class="row">
-          <div class="col-0.5">
+          <div class="col-0.5 text-center" >
             <a target="_blank" :href="url_ig"><img src="~assets/logo_ig.png" style="height: 50px; max-width: 50px"></a>
           </div>
           <div class="col">
