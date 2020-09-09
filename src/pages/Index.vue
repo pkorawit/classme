@@ -35,7 +35,7 @@
       <div class="col-8 text-center">
         <q-img
           :src="imageSrc"
-          style="height: 480px; max-width: 600px"
+          style="height: 480px; max-width: 480px"
           native-context-menu
         >
           <q-icon
