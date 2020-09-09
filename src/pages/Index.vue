@@ -1,6 +1,21 @@
 <template>
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
+      <q-dialog v-model="prepare_error">
+        <q-card style="width: 300px">
+          <q-card-section>
+            <div class="text-h6">Error</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            Please reload the page.
+          </q-card-section>
+
+          <q-card-actions align="right" class="bg-white text-teal">
+            <q-btn flat label="OK" v-close-popup @click="onError" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
       <div class="col-1">
         <q-input standout v-model="id" label="ID" readonly />
       </div>
@@ -63,8 +78,12 @@
       <div class="col-2"></div>
       <div class="col-8 bg-info  items-start">
         <div class="row">
-          <div class="col-0.5 text-center" >
-            <a target="_blank" :href="url_ig"><img src="~assets/logo_ig.png" style="height: 50px; max-width: 50px"></a>
+          <div class="col-0.5 text-center">
+            <a target="_blank" :href="url_ig"
+              ><img
+                src="~assets/logo_ig.png"
+                style="height: 50px; max-width: 50px"
+            /></a>
           </div>
           <div class="col">
             <q-input
@@ -75,7 +94,7 @@
               stack-label
             />
           </div>
-          
+
           <div class="col">
             <q-input
               filled
@@ -160,6 +179,7 @@ export default {
     return {
       count: null,
       status: true,
+      prepare_error: false,
       search: null,
       imageSrc: null,
       id: 1,
@@ -171,7 +191,7 @@ export default {
       caption_text: null,
       toggle_advertisement: null,
       toggle_tourism: null,
-      timestamp: 0,
+      timestamp: 0
     };
   },
   async mounted() {
@@ -192,7 +212,7 @@ export default {
       console.log("Status : " + this.status);
     },
     getCount() {
-       this.$axios
+      this.$axios
         .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count")
         .then(response => {
           this.count = response.data;
@@ -247,6 +267,7 @@ export default {
         .then(response => {})
         .catch(e => {
           console.log(e);
+          this.prepare_error = true;
         });
     },
     async putData() {
@@ -264,6 +285,7 @@ export default {
         .then(response => {})
         .catch(e => {
           console.log(e);
+          this.prepare_error = true;
         });
     },
     onSearch() {
@@ -312,10 +334,16 @@ export default {
         this.toggle_tourism = false;
       } else if (this.toggle_tourism == true) {
         this.toggle_advertisement = false;
-      } else if (this.toggle_advertisement == false){
+      } else if (this.toggle_advertisement == false) {
         this.toggle_tourism = false;
-      } else if (this.toggle_tourism == false){
+      } else if (this.toggle_tourism == false) {
         this.toggle_advertisement = false;
+      }
+    },
+    onError(){
+      if (this.prepare_error == true) {
+        this.id = this.id - 1;
+        this.init();
       }
     }
   }
