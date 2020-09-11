@@ -1,14 +1,14 @@
 <template>
   <q-page class="bg-secondary">
     <div class="row q-pa-sm">
-      <q-dialog v-model="prepare_error">
+      <q-dialog v-model="prepare">
         <q-card style="width: 300px">
           <q-card-section>
-            <div class="text-h6">Error</div>
+            <div class="text-h6">Inform</div>
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            Please reload the page.
+            Can not upload data on database, please reload this page again.
           </q-card-section>
 
           <q-card-actions align="right" class="bg-white text-teal">
@@ -39,13 +39,7 @@
     </div>
     <div class="row justify-center items-center">
       <div class="col-2 text-center">
-        <q-btn
-          push
-          color="negative"
-          label="<< Previous"
-          type="submit"
-          @click="onPrevious"
-        />
+        <q-btn push color="negative" label="<< Previous" @click="onPrevious" />
       </div>
       <div class="col-8 text-center">
         <q-img
@@ -65,13 +59,7 @@
         </q-img>
       </div>
       <div class="col-2 text-center">
-        <q-btn
-          push
-          color="negative"
-          label="Next >>"
-          type="submit"
-          @click="onNext"
-        />
+        <q-btn push color="negative" label="Next >>" @click="onNext" />
       </div>
     </div>
     <div class="row q-mt-sm">
@@ -168,6 +156,18 @@
         />
       </div>
     </div>
+    <div class="row q-mt-sm">
+      <div class="col-2"></div>
+      <div class="col-8 text-center">
+        <q-btn
+          color="green-6"
+          class="full-width"
+          label="Save"
+          @click="onSave"
+        />
+      </div>
+    </div>
+
     <div class="row q-mt-sm"></div>
   </q-page>
 </template>
@@ -179,7 +179,7 @@ export default {
     return {
       count: null,
       status: true,
-      prepare_error: false,
+      prepare: false,
       search: null,
       imageSrc: null,
       id: 1,
@@ -220,13 +220,14 @@ export default {
         })
         .catch(e => {
           console.log(e);
+          // console.log(JSON.stringify(e));
+          // console.log(JSON.stringify(e.response.data.status));
         });
     },
     async getData() {
       await this.$axios
         .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id)
         .then(response => {
-          // console.log(response.data);
           this.url_ig = "https://www.instagram.com/" + response.data.username;
           this.shortCode = response.data.shortCode;
           this.username = response.data.username;
@@ -248,8 +249,8 @@ export default {
           this.toggle_tourism = response.data.isTourist;
         })
         .catch(e => {
-          // console.log(JSON.stringify(e));
-          // console.log(JSON.stringify(e.response.data.status));
+          console.log(e);
+
           this.status = false;
         });
     },
@@ -267,7 +268,7 @@ export default {
         .then(response => {})
         .catch(e => {
           console.log(e);
-          this.prepare_error = true;
+          this.prepare = true;
         });
     },
     async putData() {
@@ -285,7 +286,7 @@ export default {
         .then(response => {})
         .catch(e => {
           console.log(e);
-          this.prepare_error = true;
+          this.prepare = true;
         });
     },
     onSearch() {
@@ -294,41 +295,37 @@ export default {
       }
       this.init();
     },
-    onPrevious() {
-      console.log("onPrevious");
+    onSave() {
+      console.log("onSave");
+      console.log(this.toggle_advertisement);
+      console.log(this.toggle_tourism);
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
+      } else if (this.status == true) {
+        this.putData();
+        this.onNext();
       } else {
-        this.id = this.id - 1;
-        if (this.id <= 0) {
-          this.id = 1;
-        }
-        if (this.status == true) {
-          this.putData();
-        } else {
-          this.postData();
-        }
+        this.postData();
+        this.onNext();
+      }
+      
+    },
+    onPrevious() {
+      console.log("onPrevious");
+      this.id = this.id - 1;
+      if (this.id <= 0) {
+        this.id = 1;
       }
       this.init();
     },
     onNext() {
       console.log("onNext");
-      if (this.toggle_advertisement == null && this.toggle_tourism == null) {
-        console.log("Do nothing");
-      } else {
-        this.id = this.id + 1;
-        if (this.id > this.count) {
-          this.id = this.count;
-        }
-        if (this.status == true) {
-          this.putData();
-        } else {
-          this.postData();
-        }
+      this.id = this.id + 1;
+      if (this.id > this.count) {
+        this.id = this.count;
       }
       this.init();
     },
-
     onCheck() {
       if (this.toggle_advertisement == true) {
         this.toggle_tourism = false;
@@ -340,8 +337,8 @@ export default {
         this.toggle_advertisement = false;
       }
     },
-    onError(){
-      if (this.prepare_error == true) {
+    onError() {
+      if (this.prepare == true) {
         this.id = this.id - 1;
         this.init();
       }
