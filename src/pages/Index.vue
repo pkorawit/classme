@@ -1,6 +1,5 @@
 <template>
   <q-page class="bg-secondary">
-    <div class="row q-pa-sm">
       <q-dialog v-model="prepare">
         <q-card style="width: 300px">
           <q-card-section>
@@ -16,6 +15,7 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+    <div class="row q-pa-sm">
       <div class="col-1">
         <q-input standout v-model="id" label="ID" readonly />
       </div>
@@ -178,7 +178,7 @@ export default {
   data() {
     return {
       count: null,
-      status: true,
+      state: true,
       prepare: false,
       search: null,
       imageSrc: null,
@@ -209,7 +209,7 @@ export default {
         "https://storage.cloud.google.com/instagram_phuket/post_image/" +
         this.shortCode +
         ".jpg";
-      console.log("Status : " + this.status);
+      console.log("State : " + this.state);
     },
     getCount() {
       this.$axios
@@ -221,7 +221,7 @@ export default {
         .catch(e => {
           console.log(e);
           // console.log(JSON.stringify(e));
-          // console.log(JSON.stringify(e.response.data.status));
+          // console.log(JSON.stringify(e.response.data.state));
         });
     },
     async getData() {
@@ -251,7 +251,7 @@ export default {
         .catch(e => {
           console.log(e);
 
-          this.status = false;
+          this.state = false;
         });
     },
     async postData() {
@@ -301,7 +301,7 @@ export default {
       console.log(this.toggle_tourism);
       if (this.toggle_advertisement == null && this.toggle_tourism == null) {
         console.log("Do nothing");
-      } else if (this.status == true) {
+      } else if (this.state == true) {
         this.putData();
         this.onNext();
       } else {
