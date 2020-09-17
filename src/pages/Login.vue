@@ -57,8 +57,15 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 export default {
   name: "PageLogin",
+   computed: {
+    ...mapGetters({
+      status_login: 'user_login/status_login'
+    })
+  },
   data() {
     return {
       prepare: false,
@@ -67,9 +74,13 @@ export default {
     };
   },
   async mounted() {
+    console.log("State Login >>> ",this.status_login);
     await this.init();
   },
   methods: {
+    ...mapActions({
+      setStatusLogin: "user_login/setStatusLogin"
+    }),
     async init() {
       this.email = null;
       this.password = null;
@@ -79,8 +90,13 @@ export default {
       this.onCheck();
     },
     onCheck() {
-      if (this.email == "tee") {
+      if (this.email !== null) {
         console.log("Login complete");
+        let user_login = {
+          email: this.email,
+          status: true
+        };
+        this.setStatusLogin(user_login);
         this.$router.push({ path: "/index" });
       } else {
         console.log("Login failed");

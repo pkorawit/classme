@@ -1,20 +1,20 @@
 <template>
   <q-page class="bg-secondary">
-      <q-dialog v-model="prepare">
-        <q-card style="width: 300px">
-          <q-card-section>
-            <div class="text-h6">Inform</div>
-          </q-card-section>
+    <q-dialog v-model="prepare">
+      <q-card style="width: 300px">
+        <q-card-section>
+          <div class="text-h6">Inform</div>
+        </q-card-section>
 
-          <q-card-section class="q-pt-none">
-            Can not upload data on database, please reload this page again.
-          </q-card-section>
+        <q-card-section class="q-pt-none">
+          Can not upload data on database, please reload this page again.
+        </q-card-section>
 
-          <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat label="OK" v-close-popup @click="onError" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup @click="onError" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="row q-pa-sm">
       <div class="col-1">
         <q-input standout v-model="id" label="ID" readonly />
@@ -173,8 +173,14 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "PageIndex",
+  computed: {
+    ...mapGetters({
+      status_login: 'user_login/status_login'
+    })
+  },
   data() {
     return {
       count: null,
@@ -195,6 +201,7 @@ export default {
     };
   },
   async mounted() {
+    console.log("State Login >>> ",this.status_login);
     await this.getCount();
     await this.init();
   },
@@ -308,7 +315,6 @@ export default {
         this.postData();
         this.onNext();
       }
-      
     },
     onPrevious() {
       console.log("onPrevious");
