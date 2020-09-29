@@ -1,27 +1,22 @@
 const state = {
     email: '',
-    status: false
   }
   
   const getters = {
-    status_login: (state, getters, rootState) => {
-      return state.email + ' : ' + state.status
+    user_login: (state, getters, rootState) => {
+      return state.email
     }
   }
   
   const actions = {
-    setStatusLogin: ({ commit, state }, payload) => {
+    setUserLogin: ({ commit, state }, payload) => {
       commit('SET_EMAIL', payload.email)
-      commit('SET_STATUS', payload.status)
     }
   }
   
   const mutations = {
     SET_EMAIL (state, payload) {
       state.email = payload
-    },
-    SET_STATUS (state, payload) {
-      state.status = payload
     }
   }
   

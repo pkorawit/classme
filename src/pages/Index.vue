@@ -1,50 +1,31 @@
 <template>
   <q-page class="bg-secondary">
-    <q-dialog v-model="prepare">
-      <q-card style="width: 300px">
-        <q-card-section>
-          <div class="text-h6">Inform</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Can not upload data on database, please reload this page again.
-        </q-card-section>
-
-        <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="OK" v-close-popup @click="onError" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
     <div class="row q-pa-sm">
       <div class="col-1">
-        <q-input standout v-model="id" label="ID" readonly />
+        <q-input standout v-model="display.id" label="ID" readonly />
       </div>
       <div class="col-2">
-        <q-input standout v-model="shortCode" label="Short Code" readonly />
+        <q-input
+          standout
+          v-model="display.shortCode"
+          label="Short Code"
+          readonly
+        />
       </div>
       <div class="col-6"></div>
-      <div class="col-3">
-        <q-input
-          v-model="search"
-          filled
-          label="Search by ID"
-          mask="#######"
-          @keydown.enter.prevent="onSearch"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+      <div class="col-2">
+        <q-input standout v-model="userLogin" label="User login" readonly />
+      </div>
+      <div class="col-1 text-center">
+        <q-btn push color="teal" size="md" label="Logout" @click="onLogout" />
       </div>
     </div>
+
     <div class="row justify-center items-center">
-      <div class="col-2 text-center">
-        <q-btn push color="negative" label="<< Previous" @click="onPrevious" />
-      </div>
-      <div class="col-8 text-center">
+      <div class="col-5 text-center">
         <q-img
-          :src="imageSrc"
-          style="height: 480px; max-width: 480px"
+          :src="display.imageSrc"
+          style="height: 720px; max-width: 720px"
           native-context-menu
         >
           <q-icon
@@ -58,117 +39,118 @@
           </q-icon>
         </q-img>
       </div>
-      <div class="col-2 text-center">
-        <q-btn push color="negative" label="Next >>" @click="onNext" />
-      </div>
-    </div>
-    <div class="row q-mt-sm">
-      <div class="col-2"></div>
-      <div class="col-8 bg-info  items-start">
-        <div class="row">
-          <div class="col-0.5 text-center">
-            <a target="_blank" :href="url_ig"
-              ><img
-                src="~assets/logo_ig.png"
-                style="height: 50px; max-width: 50px"
-            /></a>
-          </div>
-          <div class="col">
-            <q-input
-              filled
-              v-model="username"
-              readonly
-              label="Username"
-              stack-label
-            />
-          </div>
 
-          <div class="col">
-            <q-input
-              filled
-              v-model="fullname"
-              readonly
-              label="Fullname"
-              stack-label
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <q-input
-              filled
-              v-model="location_name"
-              readonly
-              label="Location Name"
-              stack-label
-            />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <q-input
-              filled
-              v-model="caption_text"
-              readonly
-              type="textarea"
-              label="Caption Text"
-              stack-label
-            />
-          </div>
-        </div>
-      </div>
-      <div class="col-2"></div>
-    </div>
-    <div class="row"></div>
-    <div class="row q-mt-sm">
-      <div class="col-2"></div>
-      <div class="col-8 bg-info  items-start">
-        <q-btn-toggle
-          v-model="toggle_advertisement"
-          spread
-          no-caps
-          toggle-color="purple"
-          color="white"
-          text-color="black"
-          :options="[
-            { label: 'Advertisement', value: true },
-            { label: 'Not Advertisement', value: false }
-          ]"
-          @click="onCheck"
-        />
-      </div>
-    </div>
-    <div class="row q-mt-sm">
-      <div class="col-2"></div>
-      <div class="col-8 bg-info  items-start">
-        <q-btn-toggle
-          v-model="toggle_tourism"
-          spread
-          no-caps
-          toggle-color="pink"
-          color="white"
-          text-color="black"
-          :options="[
-            { label: 'Tourism', value: true },
-            { label: 'Not Tourism', value: false }
-          ]"
-          @click="onCheck"
-        />
-      </div>
-    </div>
-    <div class="row q-mt-sm">
-      <div class="col-2"></div>
-      <div class="col-8 text-center">
-        <q-btn
-          color="green-6"
-          class="full-width"
-          label="Save"
-          @click="onSave"
-        />
-      </div>
-    </div>
+      <div class="col-5 text-center">
+        <div class="row q-mt-sm">
+          <div class="col-2"></div>
+          <div class="col-8 bg-info  items-start">
+            <div class="row">
+              <div class="col-0.5 text-center">
+                <a target="_blank" :href="imageIG"
+                  ><img
+                    src="~assets/logo_ig.png"
+                    style="height: 50px; max-width: 50px"
+                /></a>
+              </div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="display.username"
+                  readonly
+                  label="Username"
+                  stack-label
+                />
+              </div>
 
-    <div class="row q-mt-sm"></div>
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="display.fullname"
+                  readonly
+                  label="Fullname"
+                  stack-label
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="display.locationName"
+                  readonly
+                  label="Location Name"
+                  stack-label
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <q-input
+                  filled
+                  v-model="display.captionText"
+                  readonly
+                  type="textarea"
+                  label="Caption Text"
+                  stack-label
+                />
+              </div>
+            </div>
+          </div>
+          <div class="col-2"></div>
+        </div>
+
+        <div class="row"></div>
+        <div class="row q-mt-sm">
+          <div class="col-2"></div>
+          <div class="col-8 bg-info  items-start">
+            <q-btn-toggle
+              v-model="display.toggleAdvertisement"
+              spread
+              no-caps
+              toggle-color="purple"
+              color="white"
+              text-color="black"
+              :options="[
+                { label: 'Advertisement', value: true },
+                { label: 'Not Advertisement', value: false }
+              ]"
+              @click="onCheckToggle"
+            />
+          </div>
+        </div>
+        <div class="row q-mt-sm">
+          <div class="col-2"></div>
+          <div class="col-8 bg-info  items-start">
+            <q-btn-toggle
+              v-model="display.toggleTourism"
+              spread
+              no-caps
+              toggle-color="pink"
+              color="white"
+              text-color="black"
+              :options="[
+                { label: 'Tourism', value: true },
+                { label: 'Not Tourism', value: false }
+              ]"
+              @click="onCheckToggle"
+            />
+          </div>
+        </div>
+        <div class="row q-mt-sm">
+          <div class="col-2"></div>
+          <div class="col-8 text-center">
+            <q-btn
+              color="green-6"
+              class="full-width"
+              label="Save"
+              @click="onSave"
+            />
+          </div>
+        </div>
+
+        <div class="row q-mt-sm"></div>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -178,176 +160,211 @@ export default {
   name: "PageIndex",
   computed: {
     ...mapGetters({
-      status_login: 'user_login/status_login'
+      user_login: "user_login/user_login"
     })
   },
   data() {
     return {
-      count: null,
-      state: true,
-      prepare: false,
-      search: null,
+      display: {
+        id: null,
+        shortCode: null,
+        imageSrc: null,
+        username: null,
+        fullname: null,
+        locationName: null,
+        captionText: null,
+        toggleAdvertisement: null,
+        toggleTourism: null
+      },
+      imageIG: null,
+      userLogin: null,
+      countAllData: 0,
+      countImage: 0,
+      id: 0,
       imageSrc: null,
-      id: 1,
-      url_ig: null,
       shortCode: null,
       username: null,
       fullname: null,
-      location_name: null,
-      caption_text: null,
-      toggle_advertisement: null,
-      toggle_tourism: null,
-      timestamp: 0
+      locationName: null,
+      captionText: null,
+      userid: null,
+      toggleAdvertisement: null,
+      toggleTourism: null,
+      timeStart: 0,
+      timeStop: 0
     };
   },
   async mounted() {
-    console.log("State Login >>> ",this.status_login);
-    await this.getCount();
+    console.log("User Login : ", this.user_login);
+    this.userLogin = this.user_login;
+    await this.getDBPostsCountAllData();
+    console.log("getDBPostsCountAllData : " + this.countAllData);
     await this.init();
   },
   methods: {
     async init() {
-      this.toggle_advertisement = null;
-      this.toggle_tourism = null;
-      this.search = null;
-      await this.getData();
-      console.log(this.id + ": ShortCode : " + this.shortCode);
-      this.imageSrc =
+      await this.getDBPostsLogMaxID();
+      await this.getDBPostsData();
+      await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
+      await this.onDisplay();
+      await this.postDBPostsLogData();
+      await this.getDBPostsLogData();
+    },
+
+    async getDBPostsCountAllData() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count"
+        );
+        this.countAllData = response.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getDBPostsLogMaxID() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/maxid"
+        );
+        this.id = response.data;
+        this.id = this.id + 1;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getDBPostsData() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id
+        );
+        this.imageIG = "https://www.instagram.com/" + response.data.username;
+        this.shortCode = response.data.shortCode;
+        this.username = response.data.username;
+        this.fullname = response.data.fullname;
+        this.id = response.data.id;
+        this.locationName = response.data.locationName;
+        this.captionText = response.data.captionText;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getDBPostsLogData() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
+            this.display.id
+        );
+        this.timeStart = response.data.timeStart;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async postDBPostsLogData() {
+      try {
+        const response = await this.$axios.post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog",
+          {
+            Id: this.display.id,
+            ShortCode: this.display.shortCode,
+            UserId: this.userLogin,
+            TimeStart: this.timeStart,
+            TimeStop: this.timeStop
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async putDBPostsLogData() {
+      try {
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
+            this.shortCode,
+          {
+            Id: this.display.id,
+            ShortCode: this.display.shortCode,
+            UserId: this.userLogin,
+            TimeStart: this.timeStart,
+            TimeStop: this.timeStop
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async postDBPostsClassificationData() {
+      try {
+        const response = await this.$axios.post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications",
+          {
+            ShortCode: this.display.shortCode,
+            IsAds: this.display.toggleAdvertisement,
+            IsTourist: this.display.toggleTourism,
+            timestamp: this.timeStop,
+            UserId: this.userLogin
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    onDisplay() {
+      this.display.id = this.id;
+      this.display.shortCode = this.shortCode;
+      this.display.imageSrc =
         "https://storage.cloud.google.com/instagram_phuket/post_image/" +
         this.shortCode +
         ".jpg";
-      console.log("State : " + this.state);
+      this.display.username = this.username;
+      this.display.fullname = this.fullname;
+      this.display.locationName = this.locationName;
+      this.display.captionText = this.captionText;
+      this.display.toggleAdvertisement = this.toggleAdvertisement;
+      this.display.toggleTourism = this.toggleTourism;
     },
-    getCount() {
-      this.$axios
-        .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count")
-        .then(response => {
-          this.count = response.data;
-          console.log(this.count);
-        })
-        .catch(e => {
-          console.log(e);
-          // console.log(JSON.stringify(e));
-          // console.log(JSON.stringify(e.response.data.state));
-        });
-    },
-    async getData() {
-      await this.$axios
-        .get("https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id)
-        .then(response => {
-          this.url_ig = "https://www.instagram.com/" + response.data.username;
-          this.shortCode = response.data.shortCode;
-          this.username = response.data.username;
-          this.fullname = response.data.fullname;
-          this.id = response.data.id;
-          this.location_name = response.data.locationName;
-          this.caption_text = response.data.captionText;
-        })
-        .catch(e => {
-          console.log(e);
-        });
-      await this.$axios
-        .get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/" +
-            this.shortCode
-        )
-        .then(response => {
-          this.toggle_advertisement = response.data.isAds;
-          this.toggle_tourism = response.data.isTourist;
-        })
-        .catch(e => {
-          console.log(e);
 
-          this.state = false;
-        });
-    },
-    async postData() {
-      await this.$axios
-        .post(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications",
-          {
-            shortCode: this.shortCode,
-            isAds: this.toggle_advertisement,
-            isTourist: this.toggle_tourism,
-            timestamp: this.timestamp
-          }
-        )
-        .then(response => {})
-        .catch(e => {
-          console.log(e);
-          this.prepare = true;
-        });
-    },
-    async putData() {
-      await this.$axios
-        .put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/" +
-            this.shortCode,
-          {
-            shortCode: this.shortCode,
-            isAds: this.toggle_advertisement,
-            isTourist: this.toggle_tourism,
-            timestamp: this.timestamp
-          }
-        )
-        .then(response => {})
-        .catch(e => {
-          console.log(e);
-          this.prepare = true;
-        });
-    },
-    onSearch() {
-      if (!(this.search == 0 || this.search > this.count)) {
-        this.id = this.search;
-      }
-      this.init();
-    },
     onSave() {
       console.log("onSave");
-      console.log(this.toggle_advertisement);
-      console.log(this.toggle_tourism);
-      if (this.toggle_advertisement == null && this.toggle_tourism == null) {
+      if (
+        this.display.toggleAdvertisement == null &&
+        this.display.toggleTourism == null
+      ) {
         console.log("Do nothing");
-      } else if (this.state == true) {
-        this.putData();
-        this.onNext();
       } else {
-        this.postData();
+        this.putDBPostsLogData();
+        this.postDBPostsClassificationData();
         this.onNext();
       }
     },
-    onPrevious() {
-      console.log("onPrevious");
-      this.id = this.id - 1;
-      if (this.id <= 0) {
-        this.id = 1;
-      }
-      this.init();
-    },
+
     onNext() {
-      console.log("onNext");
-      this.id = this.id + 1;
-      if (this.id > this.count) {
-        this.id = this.count;
+      if (this.id > this.countAllData) {
+        this.onLogout();
       }
       this.init();
     },
-    onCheck() {
-      if (this.toggle_advertisement == true) {
-        this.toggle_tourism = false;
-      } else if (this.toggle_tourism == true) {
-        this.toggle_advertisement = false;
-      } else if (this.toggle_advertisement == false) {
-        this.toggle_tourism = false;
-      } else if (this.toggle_tourism == false) {
-        this.toggle_advertisement = false;
+
+    onCheckToggle() {
+      if (this.display.toggleAdvertisement == true) {
+        this.display.toggleTourism = false;
+      } else if (this.display.toggleTourism == true) {
+        this.display.toggleAdvertisement = false;
+      } else if (this.display.toggleAdvertisement == false) {
+        this.display.toggleTourism = false;
+      } else if (this.display.toggleTourism == false) {
+        this.display.toggleAdvertisement = false;
       }
     },
-    onError() {
-      if (this.prepare == true) {
-        this.id = this.id - 1;
-        this.init();
-      }
+
+    onLogout() {
+      console.log("Logout");
     }
   }
 };

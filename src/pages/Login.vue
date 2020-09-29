@@ -63,7 +63,7 @@ export default {
   name: "PageLogin",
    computed: {
     ...mapGetters({
-      status_login: 'user_login/status_login'
+      user_login: 'user_login/user_login'
     })
   },
   data() {
@@ -74,12 +74,12 @@ export default {
     };
   },
   async mounted() {
-    console.log("State Login >>> ",this.status_login);
+    console.log("User Login >>> ",this.user_login);
     await this.init();
   },
   methods: {
     ...mapActions({
-      setStatusLogin: "user_login/setStatusLogin"
+      setStatusLogin: "user_login/setUserLogin"
     }),
     async init() {
       this.email = null;
@@ -94,7 +94,6 @@ export default {
         console.log("Login complete");
         let user_login = {
           email: this.email,
-          status: true
         };
         this.setStatusLogin(user_login);
         this.$router.push({ path: "/index" });
