@@ -1,5 +1,26 @@
 <template>
   <q-page class="bg-secondary">
+    <q-dialog
+      v-model="persistentPostPhotoNumber"
+      persistent
+      transition-show="scale"
+      transition-hide="scale"
+    >
+      <q-card class="bg-blue-7 text-white" style="width: 300px">
+        <q-card-section>
+          <div class="text-h6">Inform</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Completed
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="Logout" v-close-popup @click="onLogout"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <div class="row q-pa-sm">
       <div class="col-1">
         <q-input standout v-model="display.id" label="ID" readonly />
@@ -12,12 +33,9 @@
           readonly
         />
       </div>
-      <div class="col-6"></div>
+      <div class="col-7"></div>
       <div class="col-2">
         <q-input standout v-model="userLogin" label="User login" readonly />
-      </div>
-      <div class="col-1 text-center">
-        <q-btn push color="teal" size="md" label="Logout" @click="onLogout" />
       </div>
     </div>
 
@@ -178,8 +196,11 @@ export default {
       },
       imageIG: null,
       userLogin: null,
-      countAllData: 0,
+      countPostNumber: 0,
+      countPostClassification: 0,
       countImage: 0,
+      maxid: 0,
+      minid: 0,
       id: 0,
       imageSrc: null,
       shortCode: null,
@@ -191,44 +212,70 @@ export default {
       toggleAdvertisement: null,
       toggleTourism: null,
       timeStart: 0,
-      timeStop: 0
+      timeStop: 0,
+      persistentPostPhotoNumber: false,
     };
   },
   async mounted() {
     console.log("User Login : ", this.user_login);
     this.userLogin = this.user_login;
-    await this.getDBPostsCountAllData();
-    console.log("getDBPostsCountAllData : " + this.countAllData);
+    await this.getDBPostsCountPostPhotoNumber();
+    console.log("getDBPostsCountPostPhotoNumber : " + this.countPostNumber);
+    
     await this.init();
   },
   methods: {
     async init() {
+      await this.getDBPostsCountPostClassification();
+    console.log(
+      "getDBPostsCountPostClassification : " + this.countPostClassification
+    );
+      // if (this.countPostNumber > this.countPostClassification) {
       await this.getDBPostsLogMaxID();
-      await this.getDBPostsData();
-      await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
-      await this.onDisplay();
-      await this.postDBPostsLogData();
-      await this.getDBPostsLogData();
+      await this.getDBPostsLogMinID();
+
+      if (5 > this.countPostClassification) {
+        // if (this.countPostNumber > this.maxid) {
+        if (5 > this.maxid) {
+          this.id = this.maxid + 1;
+          await this.getDBPostsData();
+          await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
+          await this.postDBPostsLogData();
+          await this.onDisplay();
+        } else if (this.minid > 0) {
+          this.id = this.minid;
+          await this.getDBPostsData();
+          await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
+          await this.putDBPostsLogData();
+          await this.onDisplay();
+        } else {
+          await this.putDBPostsLogSetStatusAll();
+          await this.init();
+        }
+      } else {
+        this.persistentPostPhotoNumber = true;
+        console.log("LOGOUT");
+        
+      }
     },
 
-    async getDBPostsCountAllData() {
+    async getDBPostsCountPostPhotoNumber() {
       try {
         const response = await this.$axios.get(
           "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count"
         );
-        this.countAllData = response.data;
+        this.countPostNumber = response.data;
       } catch (e) {
         console.log(e);
       }
     },
 
-    async getDBPostsLogMaxID() {
+    async getDBPostsCountPostClassification() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/maxid"
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/count"
         );
-        this.id = response.data;
-        this.id = this.id + 1;
+        this.countPostClassification = response.data;
       } catch (e) {
         console.log(e);
       }
@@ -254,10 +301,45 @@ export default {
     async getDBPostsLogData() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
-            this.display.id
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" + this.id
         );
+        this.shortCode = response.data.shortCode;
+        this.username = response.data.userId;
         this.timeStart = response.data.timeStart;
+        this.timeStop = response.data.timeStop;
+        this.status = response.data.status;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getDBPostsLogMaxID() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/maxid"
+        );
+        this.maxid = response.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getDBPostsLogMinID() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/minid"
+        );
+        this.minid = response.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async putDBPostsLogSetStatusAll() {
+      try {
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/setStatusAll"
+        );
       } catch (e) {
         console.log(e);
       }
@@ -268,11 +350,12 @@ export default {
         const response = await this.$axios.post(
           "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog",
           {
-            Id: this.display.id,
-            ShortCode: this.display.shortCode,
+            Id: this.id,
+            ShortCode: this.shortCode,
             UserId: this.userLogin,
             TimeStart: this.timeStart,
-            TimeStop: this.timeStop
+            TimeStop: this.timeStop,
+            status: true
           }
         );
       } catch (e) {
@@ -286,11 +369,31 @@ export default {
           "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
             this.shortCode,
           {
+            Id: this.id,
+            ShortCode: this.shortCode,
+            UserId: this.userLogin,
+            TimeStart: this.timeStart,
+            TimeStop: this.timeStop,
+            status: true
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async putDBPostsLogTimeStop() {
+      try {
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/timestop/" +
+            this.shortCode,
+          {
             Id: this.display.id,
             ShortCode: this.display.shortCode,
             UserId: this.userLogin,
             TimeStart: this.timeStart,
-            TimeStop: this.timeStop
+            TimeStop: this.timeStop,
+            status: false
           }
         );
       } catch (e) {
@@ -330,7 +433,7 @@ export default {
       this.display.toggleTourism = this.toggleTourism;
     },
 
-    onSave() {
+    async onSave() {
       console.log("onSave");
       if (
         this.display.toggleAdvertisement == null &&
@@ -338,14 +441,16 @@ export default {
       ) {
         console.log("Do nothing");
       } else {
-        this.putDBPostsLogData();
-        this.postDBPostsClassificationData();
-        this.onNext();
+        console.log(this.id);
+        await this.getDBPostsLogData();
+        await this.putDBPostsLogTimeStop();
+        await this.postDBPostsClassificationData();
+        await this.onNext();
       }
     },
 
     onNext() {
-      if (this.id > this.countAllData) {
+      if (this.id > this.countPostNumber) {
         this.onLogout();
       }
       this.init();
@@ -365,6 +470,8 @@ export default {
 
     onLogout() {
       console.log("Logout");
+      this.userLogin = null
+      this.$router.push({ path: "/" });
     }
   }
 };
