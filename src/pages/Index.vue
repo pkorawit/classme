@@ -1,7 +1,7 @@
 <template>
   <q-page class="bg-secondary">
     <q-dialog
-      v-model="persistentPostPhotoNumber"
+      v-model="inform.persistentPostPhotoNumber"
       persistent
       transition-show="scale"
       transition-hide="scale"
@@ -16,7 +16,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="Logout" v-close-popup @click="onLogout"/>
+          <q-btn flat label="Logout" v-close-popup @click="onLogout" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -35,7 +35,12 @@
       </div>
       <div class="col-7"></div>
       <div class="col-2">
-        <q-input standout v-model="userLogin" label="User login" readonly />
+        <q-input
+          standout
+          v-model="login.userLogin"
+          label="User login"
+          readonly
+        />
       </div>
     </div>
 
@@ -64,7 +69,7 @@
           <div class="col-8 bg-info  items-start">
             <div class="row">
               <div class="col-0.5 text-center">
-                <a target="_blank" :href="imageIG"
+                <a target="_blank" :href="display.imageIG"
                   ><img
                     src="~assets/logo_ig.png"
                     style="height: 50px; max-width: 50px"
@@ -183,10 +188,26 @@ export default {
   },
   data() {
     return {
+      login: {
+        userLogin: null
+      },
+      taskManager: {
+        id: null,
+        massage: null
+      },
+      dataPostsLogData: {
+        id: null,
+        shortCode: null,
+        username: null,
+        timeStart: null,
+        timeStop: null,
+        status: null
+      },
       display: {
         id: null,
         shortCode: null,
         imageSrc: null,
+        imageIG: null,
         username: null,
         fullname: null,
         locationName: null,
@@ -194,88 +215,67 @@ export default {
         toggleAdvertisement: null,
         toggleTourism: null
       },
-      imageIG: null,
-      userLogin: null,
-      countPostNumber: 0,
-      countPostClassification: 0,
-      countImage: 0,
-      maxid: 0,
-      minid: 0,
-      id: 0,
-      imageSrc: null,
-      shortCode: null,
-      username: null,
-      fullname: null,
-      locationName: null,
-      captionText: null,
-      userid: null,
-      toggleAdvertisement: null,
-      toggleTourism: null,
-      timeStart: 0,
-      timeStop: 0,
-      persistentPostPhotoNumber: false,
+      inform: {
+        persistentPostPhotoNumber: false
+      }
     };
   },
   async mounted() {
-    console.log("User Login : ", this.user_login);
-    this.userLogin = this.user_login;
-    await this.getDBPostsCountPostPhotoNumber();
-    console.log("getDBPostsCountPostPhotoNumber : " + this.countPostNumber);
-    
+    this.login.userLogin = this.user_login;
+    console.log("User Login : ", this.login.userLogin);
     await this.init();
   },
   methods: {
     async init() {
-      await this.getDBPostsCountPostClassification();
-    console.log(
-      "getDBPostsCountPostClassification : " + this.countPostClassification
-    );
-      // if (this.countPostNumber > this.countPostClassification) {
-      await this.getDBPostsLogMaxID();
-      await this.getDBPostsLogMinID();
+      this.display.toggleAdvertisement = null;
+      this.display.toggleTourism = null;
+      await this.getTaskManager();
+      if (this.taskManager.massage == "No_data_in_database_PostLog") {
+        console.log("No data in database PostLog");
+        this.display.id = 1;
+        await this.getDBPostsData();
+        await this.postDBPostsLogData();
+        this.display.imageSrc =
+          "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+          this.display.shortCode +
+          ".jpg";
+      } else if (this.taskManager.massage == "Reset_Status") {
+        console.log("Reset Status");
 
-      if (5 > this.countPostClassification) {
-        // if (this.countPostNumber > this.maxid) {
-        if (5 > this.maxid) {
-          this.id = this.maxid + 1;
-          await this.getDBPostsData();
-          await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
-          await this.postDBPostsLogData();
-          await this.onDisplay();
-        } else if (this.minid > 0) {
-          this.id = this.minid;
-          await this.getDBPostsData();
-          await console.log("ID:" + this.id + " ShortCode: " + this.shortCode);
-          await this.putDBPostsLogData();
-          await this.onDisplay();
-        } else {
-          await this.putDBPostsLogSetStatusAll();
-          await this.init();
-        }
-      } else {
-        this.persistentPostPhotoNumber = true;
+        await this.putDBPostsLogSetStatusAll();
+        await this.init();
+      } else if (this.taskManager.massage == "max_ID") {
+        console.log("maxID");
+        this.display.id = this.taskManager.id;
+        await this.getDBPostsData();
+        await this.postDBPostsLogData();
+        this.display.imageSrc =
+          "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+          this.display.shortCode +
+          ".jpg";
+      } else if (this.taskManager.massage == "min_ID") {
+        console.log("minID");
+        this.display.id = this.taskManager.id;
+        await this.getDBPostsData();
+        await this.putDBPostsLogData();
+        this.display.imageSrc =
+          "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+          this.display.shortCode +
+          ".jpg";
+      } else if (this.taskManager.massage == "Completed") {
+        console.log("Completed");
+        this.inform.persistentPostPhotoNumber = true;
         console.log("LOGOUT");
-        
       }
     },
 
-    async getDBPostsCountPostPhotoNumber() {
+    async getTaskManager() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/count"
+          "https://insightapi-myzemjarqq-as.a.run.app/api/TaskManager"
         );
-        this.countPostNumber = response.data;
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async getDBPostsCountPostClassification() {
-      try {
-        const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostClassifications/count"
-        );
-        this.countPostClassification = response.data;
+        this.taskManager.id = response.data.id;
+        this.taskManager.massage = response.data.massage;
       } catch (e) {
         console.log(e);
       }
@@ -284,15 +284,35 @@ export default {
     async getDBPostsData() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" + this.id
+          "https://insightapi-myzemjarqq-as.a.run.app/api/Posts/" +
+            this.display.id
         );
-        this.imageIG = "https://www.instagram.com/" + response.data.username;
-        this.shortCode = response.data.shortCode;
-        this.username = response.data.username;
-        this.fullname = response.data.fullname;
-        this.id = response.data.id;
-        this.locationName = response.data.locationName;
-        this.captionText = response.data.captionText;
+        this.display.id = response.data.id;
+        this.display.imageIG =
+          "https://www.instagram.com/" + response.data.username;
+        this.display.shortCode = response.data.shortCode;
+        this.display.username = response.data.username;
+        this.display.fullname = response.data.fullname;
+        this.display.locationName = response.data.locationName;
+        this.display.captionText = response.data.captionText;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async postDBPostsLogData() {
+      try {
+        const response = await this.$axios.post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog",
+          {
+            Id: this.display.id,
+            ShortCode: this.display.shortCode,
+            UserId: this.login.userLogin,
+            TimeStart: 0,
+            TimeStop: 0,
+            status: true
+          }
+        );
       } catch (e) {
         console.log(e);
       }
@@ -301,35 +321,53 @@ export default {
     async getDBPostsLogData() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" + this.id
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
+            this.display.id
         );
-        this.shortCode = response.data.shortCode;
-        this.username = response.data.userId;
-        this.timeStart = response.data.timeStart;
-        this.timeStop = response.data.timeStop;
-        this.status = response.data.status;
+        this.dataPostsLogData.id = response.data.id;
+        this.dataPostsLogData.shortCode = response.data.shortCode;
+        this.dataPostsLogData.username = response.data.userId;
+        this.dataPostsLogData.timeStart = response.data.timeStart;
+        this.dataPostsLogData.timeStop = response.data.timeStop;
+        this.dataPostsLogData.status = response.data.status;
       } catch (e) {
         console.log(e);
       }
     },
 
-    async getDBPostsLogMaxID() {
+    async putDBPostsLogTimeStop() {
       try {
-        const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/maxid"
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/timestop/" +
+            this.dataPostsLogData.shortCode,
+          {
+            Id: this.display.id,
+            ShortCode: this.display.shortCode,
+            UserId: this.login.userLogin,
+            TimeStart: this.dataPostsLogData.timeStart,
+            TimeStop: 0,
+            status: false
+          }
         );
-        this.maxid = response.data;
       } catch (e) {
         console.log(e);
       }
     },
 
-    async getDBPostsLogMinID() {
+    async putDBPostsLogData() {
       try {
-        const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/minid"
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
+            this.display.shortCode,
+          {
+            Id: this.display.id,
+            ShortCode: this.display.shortCode,
+            UserId: this.login.userLogin,
+            TimeStart: 0,
+            TimeStop: 0,
+            status: true
+          }
         );
-        this.minid = response.data;
       } catch (e) {
         console.log(e);
       }
@@ -345,62 +383,6 @@ export default {
       }
     },
 
-    async postDBPostsLogData() {
-      try {
-        const response = await this.$axios.post(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog",
-          {
-            Id: this.id,
-            ShortCode: this.shortCode,
-            UserId: this.userLogin,
-            TimeStart: this.timeStart,
-            TimeStop: this.timeStop,
-            status: true
-          }
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async putDBPostsLogData() {
-      try {
-        const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/" +
-            this.shortCode,
-          {
-            Id: this.id,
-            ShortCode: this.shortCode,
-            UserId: this.userLogin,
-            TimeStart: this.timeStart,
-            TimeStop: this.timeStop,
-            status: true
-          }
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    async putDBPostsLogTimeStop() {
-      try {
-        const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/PostLog/timestop/" +
-            this.shortCode,
-          {
-            Id: this.display.id,
-            ShortCode: this.display.shortCode,
-            UserId: this.userLogin,
-            TimeStart: this.timeStart,
-            TimeStop: this.timeStop,
-            status: false
-          }
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
     async postDBPostsClassificationData() {
       try {
         const response = await this.$axios.post(
@@ -410,27 +392,12 @@ export default {
             IsAds: this.display.toggleAdvertisement,
             IsTourist: this.display.toggleTourism,
             timestamp: this.timeStop,
-            UserId: this.userLogin
+            UserId: this.login.userLogin
           }
         );
       } catch (e) {
         console.log(e);
       }
-    },
-
-    onDisplay() {
-      this.display.id = this.id;
-      this.display.shortCode = this.shortCode;
-      this.display.imageSrc =
-        "https://storage.cloud.google.com/instagram_phuket/post_image/" +
-        this.shortCode +
-        ".jpg";
-      this.display.username = this.username;
-      this.display.fullname = this.fullname;
-      this.display.locationName = this.locationName;
-      this.display.captionText = this.captionText;
-      this.display.toggleAdvertisement = this.toggleAdvertisement;
-      this.display.toggleTourism = this.toggleTourism;
     },
 
     async onSave() {
@@ -441,7 +408,6 @@ export default {
       ) {
         console.log("Do nothing");
       } else {
-        console.log(this.id);
         await this.getDBPostsLogData();
         await this.putDBPostsLogTimeStop();
         await this.postDBPostsClassificationData();
@@ -450,9 +416,6 @@ export default {
     },
 
     onNext() {
-      if (this.id > this.countPostNumber) {
-        this.onLogout();
-      }
       this.init();
     },
 
@@ -470,7 +433,7 @@ export default {
 
     onLogout() {
       console.log("Logout");
-      this.userLogin = null
+      this.login.userLogin = null;
       this.$router.push({ path: "/" });
     }
   }
