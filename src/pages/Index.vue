@@ -78,7 +78,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="data.username"
+                  v-model="data.userName"
                   readonly
                   label="Username"
                   stack-label
@@ -88,7 +88,7 @@
               <div class="col">
                 <q-input
                   filled
-                  v-model="data.fullname"
+                  v-model="data.fullName"
                   readonly
                   label="Fullname"
                   stack-label
@@ -435,7 +435,6 @@ export default {
       } else {
         console.log("Doen");
         await this.postLabelClassification();
-        console.log("onSAVE >>>>>"+this.dataLabelLog.no);
         await this.putLabelLog();
         await this.init();
       }
