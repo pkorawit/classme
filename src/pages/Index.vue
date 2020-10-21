@@ -249,6 +249,11 @@ export default {
           "https://storage.cloud.google.com/instagram_phuket/post_image/" +
           this.data.shortCode +
           ".jpg";
+      } else if (this.taskManager.massage == "User_done") {
+        console.log(this.taskManager.massage);
+        await this.getLabelStatus();
+        await this.putLabelStatus();
+        await this.init();
       } else if (this.taskManager.massage == "ShortCode_max") {
         console.log(this.taskManager.massage);
         await this.getLabelStatus();
@@ -264,12 +269,12 @@ export default {
       }
     },
 
-    
     // >> TaskManager
     async getLabelTaskManager() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelTaskManager"
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelTaskManager/" +
+            this.login.userLogin
         );
         this.taskManager.massage = response.data.massage;
         this.taskManager.id = response.data.id;
@@ -279,7 +284,7 @@ export default {
       }
     },
 
-// >> LabelData
+    // >> LabelData
     async getLabelData() {
       try {
         const response = await this.$axios.get(
@@ -299,7 +304,7 @@ export default {
       }
     },
 
-// >> LabelClassification
+    // >> LabelClassification
     async postLabelClassification() {
       try {
         const response = await this.$axios.post(
@@ -310,7 +315,7 @@ export default {
             IsAds: this.data.toggleAdvertisement,
             IsTourist: this.data.toggleTourism,
             TimeStamp: 0,
-            UserId: this.login.userLogin,
+            UserId: this.login.userLogin
           }
         );
       } catch (e) {
@@ -318,7 +323,7 @@ export default {
       }
     },
 
-// >> LabelStatus
+    // >> LabelStatus
     async getLabelStatus() {
       try {
         const response = await this.$axios.get(
@@ -359,7 +364,7 @@ export default {
       }
     },
 
-// >> LabelLog
+    // >> LabelLog
     async postLabelLog() {
       try {
         const response = await this.$axios.post(
@@ -409,7 +414,8 @@ export default {
     async putLabelLog() {
       try {
         const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/TimeStop/" + this.dataLabelLog.no,
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/TimeStop/" +
+            this.dataLabelLog.no,
           {
             Id: this.dataLabelLog.id,
             ShortCode: this.dataLabelLog.shortCode,
@@ -423,7 +429,6 @@ export default {
         console.log(e);
       }
     },
-
 
     async onSave() {
       console.log("onSave");
