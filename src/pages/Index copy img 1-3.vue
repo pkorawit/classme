@@ -23,7 +23,7 @@
 
     <div class="row q-pa-sm">
       <div class="col-1">
-        <q-input standout v-model="taskManager.no" label="NO" readonly />
+        <q-input standout v-model="taskManager.id" label="ID" readonly />
       </div>
       <div class="col-2">
         <q-input
@@ -127,7 +127,7 @@
           <div class="col-2"></div>
           <div class="col-8 bg-info  items-start">
             <q-btn-toggle
-              v-model="toggle.advertisement"
+              v-model="data.toggleAdvertisement"
               spread
               no-caps
               toggle-color="purple"
@@ -145,7 +145,7 @@
           <div class="col-2"></div>
           <div class="col-8 bg-info  items-start">
             <q-btn-toggle
-              v-model="toggle.tourism"
+              v-model="data.toggleTourism"
               spread
               no-caps
               toggle-color="pink"
@@ -193,30 +193,33 @@ export default {
       },
       taskManager: {
         massage: null,
-        no: null,
+        id: null,
+        code: null
       },
       data: {
+        id: null,
+        shortCode: null,
         imageSrc: null,
         imageIG: null,
-        shortCode: null,
-        fullName: null,
         userName: null,
+        fullName: null,
         locationName: null,
         captionText: null,
+        toggleAdvertisement: null,
+        toggleTourism: null
       },
-      classification: {
+      dataLabelLog: {
+        id: null,
         shortCode: null,
-        ads: null,
-        tourist: null,
+        userId: null,
         timeStart: null,
         timeStop: null,
-        userId: null,
-        status: null,
         no: null
       },
-      toggle:{
-        advertisement: null,
-        tourism: null
+      dataLabelStatus: {
+        id: null,
+        shortCode: null,
+        status: null
       },
       inform: {
         persistentPostPhotoNumber: false
@@ -230,20 +233,35 @@ export default {
   },
   methods: {
     async init() {
-      this.toggle.advertisement = null;
-      this.toggle.tourism = null;
+      this.data.toggleAdvertisement = null;
+      this.data.toggleTourism = null;
 
-      await this.getHelpTaskManager();
+      await this.getLabelTaskManager();
       if (this.taskManager.massage == "Data") {
         console.log(this.taskManager.massage);
-        console.log(this.taskManager.no);
-        await this.getHelpClassification();
-        await this.putHelpClassificationStart();
-        await this.getHelpData();
-
+        await this.getLabelStatus();
+        await this.putLabelStatus();
+        await this.getLabelData();
+        await this.postLabelLog();
+        await this.getLabelLogMaxId();
+        await this.getLabelLog();
+        this.data.imageSrc =
+          "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+          this.data.shortCode +
+          ".jpg";
+      } else if (this.taskManager.massage == "User_done") {
+        console.log(this.taskManager.massage);
+        await this.getLabelStatus();
+        await this.putLabelStatus();
+        await this.init();
+      } else if (this.taskManager.massage == "ShortCode_max") {
+        console.log(this.taskManager.massage);
+        await this.getLabelStatus();
+        await this.putLabelStatus();
+        await this.init();
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
-        await this.putHelpClassificationSetStatusAll();
+        await this.putLabelStatusSetStatusAll();
         await this.init();
       } else if (this.taskManager.massage == "Completed") {
         console.log(this.taskManager.massage);
@@ -252,29 +270,33 @@ export default {
     },
 
     // >> TaskManager
-    async getHelpTaskManager() {
+    async getLabelTaskManager() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpTaskManager"
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelTaskManager/" +
+            this.login.userLogin
         );
         this.taskManager.massage = response.data.massage;
-        this.taskManager.no = response.data.no;
+        this.taskManager.id = response.data.id;
+        this.taskManager.code = response.data.code;
       } catch (e) {
         console.log(e);
       }
     },
 
-    // >> Data
-    async getHelpData() {
+    // >> LabelData
+    async getLabelData() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpData/" + this.classification.shortCode
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelData/" +
+            this.taskManager.code
         );
-        this.data.imageSrc = "https://storage.cloud.google.com/instagram_phuket/post_image/" + response.data.shortCode + ".jpg";
-        this.data.imageIG = "https://www.instagram.com/" + response.data.username;
+        this.data.id = response.data.id;
+        this.data.imageIG =
+          "https://www.instagram.com/" + response.data.username;
         this.data.shortCode = response.data.shortCode;
-        this.data.fullName = response.data.fullname;
         this.data.userName = response.data.username;
+        this.data.fullName = response.data.fullname;
         this.data.locationName = response.data.locationName;
         this.data.captionText = response.data.captionText;
       } catch (e) {
@@ -282,39 +304,78 @@ export default {
       }
     },
 
-    // >> Classification
-     async getHelpClassification() {
+    // >> LabelClassification
+    async postLabelClassification() {
+      try {
+        const response = await this.$axios.post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelClassification",
+          {
+            Id: this.taskManager.id,
+            ShortCode: this.data.shortCode,
+            IsAds: this.data.toggleAdvertisement,
+            IsTourist: this.data.toggleTourism,
+            TimeStamp: 0,
+            UserId: this.login.userLogin
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    // >> LabelStatus
+    async getLabelStatus() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/" + this.taskManager.no
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelStatus/" +
+            this.taskManager.id
         );
-        this.classification.shortCode = response.data.shortCode;
-        this.classification.ads = response.data.isAds;
-        this.classification.tourist = response.data.isTourist;
-        this.classification.timeStart = response.data.timeStart;
-        this.classification.timeStop = response.data.timeStop;
-        this.classification.userId = response.data.userId;
-        this.classification.status = response.data.status;
-        this.classification.no = response.data.no;
+        this.dataLabelStatus.id = response.data.id;
+        this.dataLabelStatus.shortCode = response.data.shortCode;
+        this.dataLabelStatus.status = response.data.status;
       } catch (e) {
         console.log(e);
       }
     },
 
-    async putHelpClassificationStart() {
+    async putLabelStatus() {
       try {
         const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/Start/" +
-            this.taskManager.no,
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelStatus/" +
+            this.dataLabelStatus.shortCode,
           {
-            ShortCode: this.classification.shortCode,
-            IsAds: this.classification.ads,
-            IsTourist: this.classification.tourist,
+            Id: this.dataLabelStatus.id,
+            ShortCode: this.dataLabelStatus.shortCode,
+            Status: true
+          }
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async putLabelStatusSetStatusAll() {
+      try {
+        const response = await this.$axios.put(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelStatus/SetStatusAll"
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    // >> LabelLog
+    async postLabelLog() {
+      try {
+        const response = await this.$axios.post(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/TimeStart",
+          {
+            Id: this.taskManager.id,
+            ShortCode: this.data.shortCode,
+            UserId: this.login.userLogin,
             TimeStart: 0,
             TimeStop: 0,
-            UserId: this.login.userLogin,
-            Status: true,
-            No: this.classification.no,
+            No: 0
           }
         );
       } catch (e) {
@@ -322,20 +383,46 @@ export default {
       }
     },
 
-    async putHelpClassificationStop() {
+    async getLabelLogMaxId() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/MaxId"
+        );
+        this.dataLabelLog.no = response.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getLabelLog() {
+      try {
+        const response = await this.$axios.get(
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/" +
+            this.dataLabelLog.no
+        );
+        this.dataLabelLog.id = response.data.id;
+        this.dataLabelLog.shortCode = response.data.shortCode;
+        this.dataLabelLog.userId = response.data.userId;
+        this.dataLabelLog.timeStart = response.data.timeStart;
+        this.dataLabelLog.timeStop = response.data.timeStop;
+        this.dataLabelLog.no = response.data.no;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async putLabelLog() {
       try {
         const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/Stop/" +
-            this.taskManager.no,
+          "https://insightapi-myzemjarqq-as.a.run.app/api/LabelLog/TimeStop/" +
+            this.dataLabelLog.no,
           {
-            ShortCode: this.classification.shortCode,
-            IsAds: this.toggle.advertisement,
-            IsTourist: this.toggle.tourism,
-            TimeStart: this.classification.timeStart,
+            Id: this.dataLabelLog.id,
+            ShortCode: this.dataLabelLog.shortCode,
+            UserId: this.dataLabelLog.userId,
+            TimeStart: this.dataLabelLog.timeStart,
             TimeStop: 0,
-            UserId: this.classification.userId,
-            Status: this.classification.status,
-            No: this.classification.no,
+            No: this.dataLabelLog.no
           }
         );
       } catch (e) {
@@ -343,41 +430,30 @@ export default {
       }
     },
 
-    async putHelpClassificationSetStatusAll() {
-      try {
-        const response = await this.$axios.put(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/SetStatusAll"
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    },
-
-    // Button onclick
     async onSave() {
       console.log("onSave");
       if (
-        this.toggle.advertisement == null &&
-        this.toggle.tourism == null
+        this.data.toggleAdvertisement == null &&
+        this.data.toggleTourism == null
       ) {
         console.log("Do nothing");
       } else {
         console.log("Doen");
-        await this.getHelpClassification();
-        await this.putHelpClassificationStop();
+        await this.postLabelClassification();
+        await this.putLabelLog();
         await this.init();
       }
     },
 
     onCheckToggle() {
-      if (this.toggle.advertisement == true) {
-        this.toggle.tourism = false;
-      } else if (this.toggle.tourism == true) {
-        this.toggle.advertisement = false;
-      } else if (this.toggle.advertisement == false) {
-        this.toggle.tourism = false;
-      } else if (this.toggle.tourism == false) {
-        this.toggle.advertisement = false;
+      if (this.data.toggleAdvertisement == true) {
+        this.data.toggleTourism = false;
+      } else if (this.data.toggleTourism == true) {
+        this.data.toggleAdvertisement = false;
+      } else if (this.data.toggleAdvertisement == false) {
+        this.data.toggleTourism = false;
+      } else if (this.data.toggleTourism == false) {
+        this.data.toggleAdvertisement = false;
       }
     },
 
