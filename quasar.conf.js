@@ -20,7 +20,8 @@ module.exports = function (/* ctx */) {
     boot: [
       
       'axios',
-
+      'auth',
+      'firebase'
 
     ],
 

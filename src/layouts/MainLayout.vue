@@ -4,10 +4,18 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar square>
-            <img src="~assets/a-type.svg">
+            <img src="~assets/a-type.svg" />
           </q-avatar>
           Image Classification Lebeling
         </q-toolbar-title>
+        <q-btn
+          flat
+          round
+          dense
+          label="Logout"
+          @click="logout"
+          icon="account_circle"
+        />
       </q-toolbar>
     </q-header>
 
@@ -17,79 +25,30 @@
 
     <q-footer class="bg-grey-8 text-white">
       <q-toolbar>
-        <q-toolbar-title>         
-        </q-toolbar-title>
+        <q-toolbar-title> </q-toolbar-title>
       </q-toolbar>
     </q-footer>
-
   </q-layout>
 </template>
 
 <script>
 export default {
-  data () {
+  name: "MainLayout",
+  data() {
     return {
-    }
-  }
-}
-</script>
-
-<script>
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    };
   },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+  methods: {
+    logout() {
+      this.$auth
+        .signOut()
+        .then(() => {
+          this.$router.push({ name: "signin",  params: { nextUrl: '/home' } });
+        })
+        .catch((error) => {
+          // An error happened.
+        });
+    },
   },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
-
-export default {
-  name: 'MainLayout',
-  components: { EssentialLink },
-  data () {
-    return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
-    }
-  }
-}
+};
 </script>

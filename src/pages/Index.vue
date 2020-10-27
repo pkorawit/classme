@@ -40,7 +40,7 @@
           v-model="login.userLogin"
           label="User login"
           readonly
-        />
+        />        
       </div>
     </div>
 

@@ -7,8 +7,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          The email or password you have entered has expired or does not match
-          our records, please try again.
+          {{ errorMessage }}
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-teal">
@@ -30,7 +29,7 @@
               v-model="email"
               label="Email address"
               @keydown.enter.prevent="onLogin"
-              :rules="[val => !!val]"
+              :rules="[(val) => !!val]"
             />
             <q-input
               outlined
@@ -39,14 +38,26 @@
               type="password"
               hint
               @keydown.enter.prevent="onLogin"
-              :rules="[val => !!val]"
+              :rules="[(val) => !!val]"
             />
             <div class="text-center">
               <q-btn
                 color="green-6"
-                class="q-px-xl q-py-xs"
-                label="Login"
+                class="q-px-xl q-py-xs full-width"
+                label="Login with Classme"
+                icon="alternate_email"
+                filled
                 @click="onLogin"
+              />
+            </div>
+            <div class="text-center">
+              <q-btn
+                color="red"
+                class="q-px-xl q-py-xs q-mt-sm full-width"
+                label="Login with Gmail"
+                icon="mail_outline"
+                filled
+                @click="onGmailLogin"
               />
             </div>
           </q-card-section>
@@ -61,25 +72,26 @@ import { mapGetters } from "vuex";
 import { mapActions } from "vuex";
 export default {
   name: "PageLogin",
-   computed: {
+  computed: {
     ...mapGetters({
-      user_login: 'user_login/user_login'
-    })
+      user_login: "user_login/user_login",
+    }),
   },
   data() {
     return {
       prepare: false,
       email: null,
-      password: null
+      password: null,
+      errorMessage: "",
     };
   },
   async mounted() {
-    console.log("User Login >>> ",this.user_login);
+    console.log("User Login >>> ", this.user_login);
     await this.init();
   },
   methods: {
     ...mapActions({
-      setStatusLogin: "user_login/setUserLogin"
+      setStatusLogin: "user_login/setUserLogin",
     }),
     async init() {
       this.email = null;
@@ -89,20 +101,61 @@ export default {
       console.log("onLogin");
       this.onCheck();
     },
+    onGmailLogin() {
+      console.log("onGmailLogin");
+      this.onGmailCheck();
+    },
+    onGmailCheck() {
+      var provider = new this.$firebase.auth.GoogleAuthProvider();
+      this.$auth
+        .signInWithPopup(provider)
+        .then((result) => {
+          var token = result.credential.accessToken;
+          // The signed-in user info.
+          var user = result.user;
+          if (user) {
+          this.prepare = false;
+          let user_login = {
+            email: user.email,
+          };
+          this.setStatusLogin(user_login);
+          this.$router.push({ name: "home" });
+        } else {
+        }
+        })
+        .catch(function (error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          this.errorMessage = errorMessage;
+          this.prepare = true;
+          console.log(errorMessage);
+        });
+    },
     onCheck() {
-      if (this.email !== null) {
-        console.log("Login complete");
-        let user_login = {
-          email: this.email,
-        };
-        this.setStatusLogin(user_login);
-        this.$router.push({ path: "/index" });
-      } else {
-        console.log("Login failed");
-        this.prepare = true;
-        this.init();
-      }
-    }
-  }
+      this.$auth
+        .signInWithEmailAndPassword(this.email, this.password)
+        .catch((error) => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          this.errorMessage = errorMessage;
+          this.prepare = true;
+          console.log(errorMessage);
+        });
+
+      this.$auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.prepare = false;
+          let user_login = {
+            email: this.email,
+          };
+          this.setStatusLogin(user_login);
+          this.$router.push({ name: "home" });
+        } else {
+        }
+      });
+    },
+  },
 };
 </script>
