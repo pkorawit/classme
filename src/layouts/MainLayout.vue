@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar square>
-            <img src="~assets/a-type.svg" />
+            <img src="~assets/a-type.png" />
           </q-avatar>
           Image Classification Lebeling
         </q-toolbar-title>

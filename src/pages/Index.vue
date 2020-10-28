@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-secondary">
+  <q-page>
     <q-dialog
       v-model="inform.persistentPostPhotoNumber"
       persistent
@@ -40,7 +40,7 @@
           v-model="login.userLogin"
           label="User login"
           readonly
-        />        
+        />
       </div>
     </div>
 
@@ -193,7 +193,7 @@ export default {
       },
       taskManager: {
         massage: null,
-        no: null,
+        no: null
       },
       data: {
         imageSrc: null,
@@ -202,7 +202,7 @@ export default {
         fullName: null,
         userName: null,
         locationName: null,
-        captionText: null,
+        captionText: null
       },
       classification: {
         shortCode: null,
@@ -214,7 +214,7 @@ export default {
         status: null,
         no: null
       },
-      toggle:{
+      toggle: {
         advertisement: null,
         tourism: null
       },
@@ -240,7 +240,6 @@ export default {
         await this.getHelpClassification();
         await this.putHelpClassificationStart();
         await this.getHelpData();
-
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
         await this.putHelpClassificationSetStatusAll();
@@ -268,10 +267,15 @@ export default {
     async getHelpData() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpData/" + this.classification.shortCode
+          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpData/" +
+            this.classification.shortCode
         );
-        this.data.imageSrc = "https://storage.cloud.google.com/instagram_phuket/post_image/" + response.data.shortCode + ".jpg";
-        this.data.imageIG = "https://www.instagram.com/" + response.data.username;
+        this.data.imageSrc =
+          "https://storage.cloud.google.com/instagram_phuket/post_image/" +
+          response.data.shortCode +
+          ".jpg";
+        this.data.imageIG =
+          "https://www.instagram.com/" + response.data.username;
         this.data.shortCode = response.data.shortCode;
         this.data.fullName = response.data.fullname;
         this.data.userName = response.data.username;
@@ -283,10 +287,11 @@ export default {
     },
 
     // >> Classification
-     async getHelpClassification() {
+    async getHelpClassification() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/" + this.taskManager.no
+          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/" +
+            this.taskManager.no
         );
         this.classification.shortCode = response.data.shortCode;
         this.classification.ads = response.data.isAds;
@@ -314,7 +319,7 @@ export default {
             TimeStop: 0,
             UserId: this.login.userLogin,
             Status: true,
-            No: this.classification.no,
+            No: this.classification.no
           }
         );
       } catch (e) {
@@ -335,7 +340,7 @@ export default {
             TimeStop: 0,
             UserId: this.classification.userId,
             Status: this.classification.status,
-            No: this.classification.no,
+            No: this.classification.no
           }
         );
       } catch (e) {
@@ -356,10 +361,7 @@ export default {
     // Button onclick
     async onSave() {
       console.log("onSave");
-      if (
-        this.toggle.advertisement == null &&
-        this.toggle.tourism == null
-      ) {
+      if (this.toggle.advertisement == null && this.toggle.tourism == null) {
         console.log("Do nothing");
       } else {
         console.log("Doen");
@@ -389,3 +391,19 @@ export default {
   }
 };
 </script>
+
+<style>
+html,
+body {
+  height: 100%;
+}
+body {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 254, 234, 1) 0%,
+    rgba(255, 254, 234, 1) 35%,
+    #b7e8eb 100%
+  );
+  overflow: hidden;
+}
+</style>
