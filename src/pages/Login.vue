@@ -19,7 +19,7 @@
       </q-card>
     </q-dialog>
     <div class="row justify-center items-center">
-      <div class="q-pa-md row items-start q-gutter-md">
+      <div class="q-pa-xl row items-start q-gutter-md">
         <q-card flat bordered class="my-card">
           <q-card-section>
             <div class="text-h6 text-center">
