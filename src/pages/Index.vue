@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-dialog
-      v-model="inform.persistentPostPhotoNumber"
+      v-model="inform.persistentMaxDone"
       persistent
       transition-show="scale"
       transition-hide="scale"
@@ -219,7 +219,7 @@ export default {
         tourism: null
       },
       inform: {
-        persistentPostPhotoNumber: false
+        persistentMaxDone: false
       }
     };
   },
@@ -246,7 +246,7 @@ export default {
         await this.init();
       } else if (this.taskManager.massage == "Completed") {
         console.log(this.taskManager.massage);
-        this.inform.persistentPostPhotoNumber = true;
+        this.inform.persistentMaxDone = true;
       }
     },
 
@@ -385,8 +385,14 @@ export default {
 
     onLogout() {
       console.log("Logout");
-      this.login.userLogin = null;
-      this.$router.push({ path: "/" });
+      this.$auth
+        .signOut()
+        .then(() => {
+          this.$router.push({ name: "signin",  params: { nextUrl: '/home' } });
+        })
+        .catch((error) => {
+          // An error happened.
+        });
     }
   }
 };
