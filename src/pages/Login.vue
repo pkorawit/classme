@@ -18,7 +18,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div class="row justify-center items-center">
+    <div class="row justify-center fixed-top">
       <div class="q-pa-xl row items-start q-gutter-md">
         <q-card flat bordered class="my-card">
           <q-card-section>
@@ -223,4 +223,9 @@ body {
     transform: translate3d(0, 5px, 0);
   }
 }
+
+.fixed-top {
+  margin-top: 150px;
+}
+
 </style>
