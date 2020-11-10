@@ -239,7 +239,7 @@ export default {
         console.log(this.taskManager.no);
         await this.getHelpClassification();
         await this.putHelpClassificationStart();
-        await this.getHelpData();
+        await setTimeout(await this.display,500) 
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
         await this.putHelpClassificationSetStatusAll();
@@ -247,6 +247,15 @@ export default {
       } else if (this.taskManager.massage == "Completed") {
         console.log(this.taskManager.massage);
         this.inform.persistentMaxDone = true;
+      }
+    },
+
+    async display(){
+      await this.getHelpClassification();
+      if (this.classification.userId == this.login.userLogin){
+        await this.getHelpData();
+      } else {
+        await this.init();
       }
     },
 
