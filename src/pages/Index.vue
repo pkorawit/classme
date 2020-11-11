@@ -239,7 +239,7 @@ export default {
         console.log(this.taskManager.no);
         await this.getHelpClassification();
         await this.putHelpClassificationStart();
-        await setTimeout(await this.display,500) 
+        await setTimeout(await this.display,1000) 
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
         await this.putHelpClassificationSetStatusAll();
