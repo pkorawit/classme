@@ -173,14 +173,13 @@
 
         <div class="row q-mt-sm"></div>
       </div>
-
     </div>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import { QSpinnerFacebook } from 'quasar'
+import { QSpinnerFacebook } from "quasar";
 
 export default {
   name: "PageIndex",
@@ -224,13 +223,14 @@ export default {
       inform: {
         persistentMaxDone: false
       },
-      timer:0
+      timer: 0
     };
   },
   async mounted() {
     this.login.userLogin = this.user_login;
     console.log("User Login : ", this.login.userLogin);
-    await this.init();
+    this.init();
+    this.showLoading();
   },
   methods: {
     async init() {
@@ -243,7 +243,7 @@ export default {
         console.log(this.taskManager.no);
         await this.getHelpClassification();
         await this.putHelpClassificationStart();
-        await setTimeout(await this.display,1000) 
+        await setTimeout(await this.display, 1000);
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
         await this.putHelpClassificationSetStatusAll();
@@ -254,14 +254,14 @@ export default {
       }
     },
 
-    async display(){
+    async display() {
       await this.getHelpClassification();
-      if (this.classification.userId == this.login.userLogin){
+      if (this.classification.userId == this.login.userLogin) {
         await this.getHelpData();
         this.timer = setTimeout(() => {
-        this.$q.loading.hide()
-        this.timer = void 0
-      }, 1000)
+          this.$q.loading.hide();
+          this.timer = void 0;
+        }, 1000);
       } else {
         await this.init();
       }
@@ -406,29 +406,25 @@ export default {
       this.$auth
         .signOut()
         .then(() => {
-          this.$router.push({ name: "signin",  params: { nextUrl: '/home' } });
+          this.$router.push({ name: "signin", params: { nextUrl: "/home" } });
         })
-        .catch((error) => {
+        .catch(error => {
           // An error happened.
         });
     },
-    showLoading () {
+    showLoading() {
       this.$q.loading.show({
         spinner: QSpinnerFacebook,
-        spinnerColor: 'yellow',
+        spinnerColor: "yellow",
         spinnerSize: 140,
-        backgroundColor: 'blue-8',
-        message: 'Saving data',
-        messageColor: 'white'
-      })
- 
-      
+        backgroundColor: "blue-8"
+      });
     }
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.timer !== void 0) {
-      clearTimeout(this.timer)
-      this.$q.loading.hide()
+      clearTimeout(this.timer);
+      this.$q.loading.hide();
     }
   }
 };
