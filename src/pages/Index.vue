@@ -243,7 +243,7 @@ export default {
         console.log(this.taskManager.no);
         await this.getHelpClassification();
         await this.putHelpClassificationStart();
-        await setTimeout(await this.display, 1000);
+        await setTimeout(await this.display, 500);
       } else if (this.taskManager.massage == "Reset_Status") {
         console.log(this.taskManager.massage);
         await this.putHelpClassificationSetStatusAll();
@@ -261,7 +261,7 @@ export default {
         this.timer = setTimeout(() => {
           this.$q.loading.hide();
           this.timer = void 0;
-        }, 1000);
+        }, 500);
       } else {
         await this.init();
       }
