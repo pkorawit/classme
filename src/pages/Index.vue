@@ -173,12 +173,15 @@
 
         <div class="row q-mt-sm"></div>
       </div>
+
     </div>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { QSpinnerFacebook } from 'quasar'
+
 export default {
   name: "PageIndex",
   computed: {
@@ -220,7 +223,8 @@ export default {
       },
       inform: {
         persistentMaxDone: false
-      }
+      },
+      timer:0
     };
   },
   async mounted() {
@@ -254,6 +258,10 @@ export default {
       await this.getHelpClassification();
       if (this.classification.userId == this.login.userLogin){
         await this.getHelpData();
+        this.timer = setTimeout(() => {
+        this.$q.loading.hide()
+        this.timer = void 0
+      }, 1000)
       } else {
         await this.init();
       }
@@ -374,6 +382,7 @@ export default {
         console.log("Do nothing");
       } else {
         console.log("Doen");
+        this.showLoading();
         await this.getHelpClassification();
         await this.putHelpClassificationStop();
         await this.init();
@@ -402,6 +411,24 @@ export default {
         .catch((error) => {
           // An error happened.
         });
+    },
+    showLoading () {
+      this.$q.loading.show({
+        spinner: QSpinnerFacebook,
+        spinnerColor: 'yellow',
+        spinnerSize: 140,
+        backgroundColor: 'blue-8',
+        message: 'Saving data',
+        messageColor: 'white'
+      })
+ 
+      
+    }
+  },
+  beforeDestroy () {
+    if (this.timer !== void 0) {
+      clearTimeout(this.timer)
+      this.$q.loading.hide()
     }
   }
 };
