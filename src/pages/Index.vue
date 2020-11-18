@@ -10,11 +10,7 @@
         <q-card-section>
           <div class="text-h6">Inform</div>
         </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Completed
-        </q-card-section>
-
+        <q-card-section class="q-pt-none"> Completed </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="Logout" v-close-popup @click="onLogout" />
         </q-card-actions>
@@ -66,7 +62,7 @@
       <div class="col-5 text-center">
         <div class="row q-mt-sm">
           <div class="col-2"></div>
-          <div class="col-8 bg-info  items-start">
+          <div class="col-8 bg-info items-start">
             <div class="row">
               <div class="col-0.5 text-center">
                 <a target="_blank" :href="data.imageIG"
@@ -125,7 +121,7 @@
         <div class="row"></div>
         <div class="row q-mt-sm">
           <div class="col-2"></div>
-          <div class="col-8 bg-info  items-start">
+          <div class="col-8 bg-info items-start">
             <q-btn-toggle
               v-model="toggle.advertisement"
               spread
@@ -135,7 +131,7 @@
               text-color="black"
               :options="[
                 { label: 'Advertisement', value: true },
-                { label: 'Not Advertisement', value: false }
+                { label: 'Not Advertisement', value: false },
               ]"
               @click="onCheckToggle"
             />
@@ -143,7 +139,7 @@
         </div>
         <div class="row q-mt-sm">
           <div class="col-2"></div>
-          <div class="col-8 bg-info  items-start">
+          <div class="col-8 bg-info items-start">
             <q-btn-toggle
               v-model="toggle.tourism"
               spread
@@ -153,7 +149,7 @@
               text-color="black"
               :options="[
                 { label: 'Tourism', value: true },
-                { label: 'Not Tourism', value: false }
+                { label: 'Not Tourism', value: false },
               ]"
               @click="onCheckToggle"
             />
@@ -170,7 +166,6 @@
             />
           </div>
         </div>
-
         <div class="row q-mt-sm"></div>
       </div>
     </div>
@@ -180,22 +175,21 @@
 <script>
 import { mapGetters } from "vuex";
 import { QSpinnerFacebook } from "quasar";
-
 export default {
   name: "PageIndex",
   computed: {
     ...mapGetters({
-      user_login: "user_login/user_login"
-    })
+      user_login: "user_login/user_login",
+    }),
   },
   data() {
     return {
       login: {
-        userLogin: null
+        userLogin: null,
       },
       taskManager: {
         massage: null,
-        no: null
+        no: null,
       },
       data: {
         imageSrc: null,
@@ -204,7 +198,7 @@ export default {
         fullName: null,
         userName: null,
         locationName: null,
-        captionText: null
+        captionText: null,
       },
       classification: {
         shortCode: null,
@@ -214,29 +208,28 @@ export default {
         timeStop: null,
         userId: null,
         status: null,
-        no: null
+        no: null,
       },
       toggle: {
         advertisement: null,
-        tourism: null
+        tourism: null,
       },
       inform: {
-        persistentMaxDone: false
+        persistentMaxDone: false,
       },
-      timer: 0
+      timer: 0,
     };
   },
   async mounted() {
     this.login.userLogin = this.user_login;
     console.log("User Login : ", this.login.userLogin);
     this.init();
-    this.showLoading();
   },
   methods: {
     async init() {
+      this.showLoading();
       this.toggle.advertisement = null;
       this.toggle.tourism = null;
-
       await this.getHelpTaskManager();
       if (this.taskManager.massage == "Data") {
         console.log(this.taskManager.massage);
@@ -336,7 +329,7 @@ export default {
             TimeStop: 0,
             UserId: this.login.userLogin,
             Status: true,
-            No: this.classification.no
+            No: this.classification.no,
           }
         );
       } catch (e) {
@@ -357,7 +350,7 @@ export default {
             TimeStop: 0,
             UserId: this.classification.userId,
             Status: this.classification.status,
-            No: this.classification.no
+            No: this.classification.no,
           }
         );
       } catch (e) {
@@ -375,14 +368,13 @@ export default {
       }
     },
 
-    // Button onclick
+    // >> Button
     async onSave() {
       console.log("onSave");
       if (this.toggle.advertisement == null && this.toggle.tourism == null) {
         console.log("Do nothing");
       } else {
         console.log("Doen");
-        this.showLoading();
         await this.getHelpClassification();
         await this.putHelpClassificationStop();
         await this.init();
@@ -408,25 +400,27 @@ export default {
         .then(() => {
           this.$router.push({ name: "signin", params: { nextUrl: "/home" } });
         })
-        .catch(error => {
+        .catch((error) => {
           // An error happened.
         });
     },
+
+    // >> Loading
     showLoading() {
       this.$q.loading.show({
         spinner: QSpinnerFacebook,
         spinnerColor: "yellow",
         spinnerSize: 140,
-        backgroundColor: "blue-8"
+        backgroundColor: "blue-8",
       });
-    }
+    },
   },
   beforeDestroy() {
     if (this.timer !== void 0) {
       clearTimeout(this.timer);
       this.$q.loading.hide();
     }
-  }
+  },
 };
 </script>
 
