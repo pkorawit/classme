@@ -14,7 +14,7 @@
     <div class="row q-pa-sm">
       <div class="col-11"></div>
       <div class="col-1">
-        <q-btn color="green-6" label="Reload" @click="init" />
+        <q-btn color="warning" label="Reload" class="full-width" @click="init" />
       </div>
     </div>
 
