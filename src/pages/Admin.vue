@@ -11,9 +11,18 @@
         />
       </div>
     </div>
-
     <div class="row q-pa-sm">
-      <div class="col-5">
+      <div class="col-11"></div>
+      <div class="col-1">
+        <q-btn color="green-6" label="Reload" @click="init" />
+      </div>
+    </div>
+
+    <!-- Linear -->
+    <div class="row q-pa-sm">
+      <div class="col-1"></div>
+
+      <div class="col-4">
         <q-linear-progress
           dark
           stripe
@@ -28,12 +37,12 @@
               color="white"
               text-color="dark"
               :label="'Complete : ' + linear.countByDone"
-            /> 
+            />
           </div>
         </q-linear-progress>
       </div>
-      <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2"></div>
+      <div class="col-4">
         <q-linear-progress
           dark
           stripe
@@ -55,7 +64,8 @@
     </div>
     <!-- // -->
     <div class="row q-pa-sm">
-      <div class="col-5">
+      <div class="col-1"></div>
+      <div class="col-4">
         <q-linear-progress
           dark
           stripe
@@ -74,8 +84,8 @@
           </div>
         </q-linear-progress>
       </div>
-      <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2"></div>
+      <div class="col-4">
         <q-linear-progress
           dark
           stripe
@@ -94,38 +104,87 @@
           </div>
         </q-linear-progress>
       </div>
-      <div class="col-1">
-        <q-btn color="green-6" label="Reload" @click="init" />
+    </div>
+    <div class="row q-pa-sm"></div>
+
+    <!-- Tabel -->
+    <div class="row">
+      <!-- All User -->
+      <div class="col">
+        <div class="q-pa-md">
+          <q-scroll-area
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+            style="height: 500px; max-width: 1280px"
+          >
+            <q-table
+              title="User"
+              :data="data_all"
+              :columns="columns_data_all"
+              :filter="report.filterUser"
+              row-key="userID"
+              selection="single"
+              :selected.sync="report.selected"
+              @update:selected="onDetail"
+            >
+              <template v-slot:top-right>
+                <q-input
+                  outlined
+                  dense
+                  debounce="300"
+                  v-model="report.filterUser"
+                  placeholder="Search by Email"
+                >
+                
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
+            </q-table>
+          </q-scroll-area>
+        </div>
+      </div>
+      <!-- User Done -->
+      <div class="col">
+        <div class="q-pa-md">
+          <q-scroll-area
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+            style="height: 500px; max-width: 1280px"
+          >
+            <q-table
+              :title="'Detail by User : ' + report.detailBy"
+              :data="data_by_user"
+              :columns="columns_data_by_user"
+              :filter="report.filterShortCode"
+              row-key="shortCode"
+            >
+              <template v-slot:top-right>
+                <q-input
+                  outlined
+                  dense
+                  debounce="300"
+                  v-model="report.filterShortCode"
+                  placeholder="Search by ShortCode"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" />
+                  </template>
+                </q-input>
+              </template>
+            </q-table>
+          </q-scroll-area>
+        </div>
       </div>
     </div>
-
-    <div class="row q-pa-sm"></div>
-    <!-- All User -->
-    <div class="q-pa-md">
-      <q-table
-        title="User"
-        :data="data_all"
-        :columns="columns_data_all"
-        row-key="userID"
-      ></q-table>
-    </div>
-
-    <!-- User Done -->
-    <div class="q-pa-md">
-      <q-table
-        title="Detail by User"
-        :data="data_by_user"
-        :columns="columns_data_by_user"
-        row-key="userID"
-      ></q-table>
-    </div>
-
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import { QSpinnerFacebook } from "quasar";
+import { date } from 'quasar'
 
 export default {
   name: "PageIndex",
@@ -139,6 +198,8 @@ export default {
       login: {
         userLogin: null,
       },
+
+      // Linear
       linear: {
         countAllData: null,
         countByDone: null,
@@ -149,12 +210,16 @@ export default {
         progressAds: null,
         progressTourist: null,
       },
+      // Report
       report: {
         all: null,
         byUser: null,
+        filterUser: null,
+        filterShortCode: null,
+        selected: [],
+        detailBy: "",
       },
-      timer: 0,
-
+      // Tabel
       columns_data_all: [
         {
           name: "userID",
@@ -173,66 +238,68 @@ export default {
           sortable: true,
         },
       ],
-      data_all: [
-        {
-          userID: "korawit.p@gmail.com",
-          count: 5,
-        },
-        {
-          userID: "korawit.p@phuket.psu.ac.th",
-          count: 24,
-        },
-      ],
-
+      data_all: [],
       columns_data_by_user: [
         {
-          name: "shortcode",
+          name: "shortCode",
           required: true,
-          label: "shortcode",
+          label: "Short Code",
           align: "left",
-          field: (row) => row.shortcode,
+          field: (row) => row.shortCode,
           format: (val) => `${val}`,
           sortable: true,
         },
         {
-          name: "ads",
+          name: "isAds",
           align: "center",
-          label: "ads",
-          field: "ads",
+          label: "Ads",
+          field: "isAds",
           sortable: true,
         },
         {
-          name: "tourist",
+          name: "isTourist",
           align: "center",
-          label: "tourist",
-          field: "tourist",
+          label: "Tourist",
+          field: "isTourist",
           sortable: true,
         },
         {
-          name: "userID",
+          name: "Time Start",
           align: "center",
-          label: "userID",
-          field: "userID",
+          label: "TimeStart",
+          // field: "timeStart",
+          field: (row) => date.formatDate(row.timeStart, 'YYYY-MM-DD : hh:mm:ss'),
+          sortable: true,
+        },
+        {
+          name: "Time Stop",
+          align: "center",
+          label: "TimeStop",
+          // field: "timeStop",
+          field: (row) => date.formatDate(row.timeStop, 'YYYY-MM-DD : hh:mm:ss'),
           sortable: true,
         },
       ],
-      data_by_user: [
-        {
-          shortcode: "BvkUlOtA8iD",
-          ads: true,
-          tourist: false,
-          userID: "korawit.p@gmail.com",
-        },
-        {
-          shortcode: "ASkUlOtA8iD",
-          ads: true,
-          tourist: false,
-          userID: "korawit.p@gmail.com",
-        },
-        
-      ],
+      data_by_user: [],
 
+      // Scroll Area
+      thumbStyle: {
+        right: "4px",
+        borderRadius: "5px",
+        backgroundColor: "#027be3",
+        width: "5px",
+        opacity: 0.75,
+      },
+      barStyle: {
+        right: "2px",
+        borderRadius: "9px",
+        backgroundColor: "#027be3",
+        width: "9px",
+        opacity: 0.2,
+      },
 
+      // Loading
+      timer: 0,
     };
   },
 
@@ -255,10 +322,7 @@ export default {
       console.log("countTourist : " + this.linear.countTourist);
       await this.getHelpReportAll();
       console.log(this.report.all);
-      // onClick
-      await this.onDetail()
-      
-
+      this.data_all = this.report.all;
 
       this.timer = setTimeout(() => {
         this.$q.loading.hide();
@@ -334,7 +398,8 @@ export default {
     async getHelpReportByUser() {
       try {
         const response = await this.$axios.get(
-          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/DetailByUser/" + "korawit.p@gmail.com"
+          "https://insightapi-myzemjarqq-as.a.run.app/api/HelpClassification/DetailByUser/" +
+            this.report.detailBy
         );
         this.report.byUser = response.data;
       } catch (e) {
@@ -354,13 +419,26 @@ export default {
           // An error happened.
         });
     },
-    
-    async onDetail(){
-      console.log("Detail");
-      await this.getHelpReportByUser();
-      console.log(this.report.byUser);
+
+    async onDetail(newSelected) {
+      this.showLoading();
+      if(newSelected[0] == undefined){
+        this.report.detailBy = ""
+        this.data_by_user = []
+      }else{
+        console.log("Detail");
+        this.report.detailBy = newSelected[0].userID;
+        console.log(this.report.detailBy);
+        await this.getHelpReportByUser();
+        console.log(this.report.byUser);
+        this.data_by_user = this.report.byUser;
+      }
+      this.timer = setTimeout(() => {
+        this.$q.loading.hide();
+        this.timer = void 0;
+      }, 500);
     },
-    
+
     // >> Loading
     showLoading() {
       this.$q.loading.show({
