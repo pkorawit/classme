@@ -323,11 +323,7 @@ export default {
       await this.getHelpReportAll();
       console.log(this.report.all);
       this.data_all = this.report.all;
-
-      this.timer = setTimeout(() => {
-        this.$q.loading.hide();
-        this.timer = void 0;
-      }, 500);
+      await this.onTimeout();
     },
 
     async progressLabel() {
@@ -437,6 +433,13 @@ export default {
         this.$q.loading.hide();
         this.timer = void 0;
       }, 500);
+    },
+
+    onTimeout(){
+      this.timer = setTimeout(() => {
+          this.$q.loading.hide();
+          this.timer = void 0;
+        }, 500);
     },
 
     // >> Loading

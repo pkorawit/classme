@@ -12,7 +12,7 @@
         </q-card-section>
         <q-card-section class="q-pt-none"> Completed </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
-          <q-btn flat label="Logout" v-close-popup @click="onLogout" />
+          <q-btn flat label="OK" v-close-popup @click="onLogout"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -243,6 +243,7 @@ export default {
         await this.init();
       } else if (this.taskManager.massage == "Completed") {
         console.log(this.taskManager.massage);
+        await this.onTimeout();
         this.inform.persistentMaxDone = true;
       }
     },
@@ -251,10 +252,7 @@ export default {
       await this.getHelpClassification();
       if (this.classification.userId == this.login.userLogin) {
         await this.getHelpData();
-        this.timer = setTimeout(() => {
-          this.$q.loading.hide();
-          this.timer = void 0;
-        }, 500);
+        await this.onTimeout();
       } else {
         await this.init();
       }
@@ -403,6 +401,13 @@ export default {
         .catch((error) => {
           // An error happened.
         });
+    },
+
+    onTimeout(){
+      this.timer = setTimeout(() => {
+          this.$q.loading.hide();
+          this.timer = void 0;
+        }, 500);
     },
 
     // >> Loading

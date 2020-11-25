@@ -122,7 +122,11 @@ export default {
               email: user.email
             };
             this.setStatusLogin(user_login);
-            this.$router.push({ name: "home" });
+            if(user_login.email == "worrapong.osk@gmail.com" || user_login.email == "korawit.p@gmail.com"){
+              this.$router.push({ name: "admin" });
+            }else{
+              this.$router.push({ name: "home" });
+            }
           } else {
           }
         })
